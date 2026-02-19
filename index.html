@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>La Pâtisserie — Artisan Cake Boutique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   CSS VARIABLES — Edit colors/fonts here
+═══════════════════════════════════════════ */
+:root {
+  --gold:        #C9A96E;
+  --gold-light:  #E8D5B0;
+  --gold-dark:   #8B6914;
+  --cream:       #FAF6F0;
+  --cream-dark:  #F0E9DE;
+  --brown:       #2C1A0E;
+  --brown-mid:   #5C3D2E;
+  --white:       #FFFFFF;
+  --grey:        #888;
+  --shadow:      0 8px 40px rgba(44,26,14,0.12);
+  --shadow-hover:0 16px 60px rgba(44,26,14,0.22);
+  --radius:      16px;
+  --radius-sm:   8px;
+  --font-serif:  'Cormorant Garamond', Georgia, serif;
+  --font-sans:   'Montserrat', sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font-sans);background:var(--cream);color:var(--brown);min-height:100vh;overflow-x:hidden;}
+img{max-width:100%;display:block;}
+a{text-decoration:none;color:inherit;}
+button{cursor:pointer;border:none;background:none;font-family:inherit;}
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--cream-dark);}
+::-webkit-scrollbar-thumb{background:var(--gold);border-radius:3px;}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:1000;background:var(--white);border-bottom:1px solid var(--gold-light);box-shadow:0 2px 20px rgba(44,26,14,0.08);}
+.header-top{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;gap:12px;}
+.logo{flex-shrink:0;display:flex;flex-direction:column;line-height:1;}
+.logo-main{font-family:var(--font-serif);font-size:clamp(20px,5vw,28px);font-weight:600;color:var(--brown);letter-spacing:.02em;}
+.logo-sub{font-size:9px;font-weight:500;letter-spacing:.25em;color:var(--gold);text-transform:uppercase;margin-top:2px;}
+.search-wrap{flex:1;max-width:400px;position:relative;}
+.search-wrap input{width:100%;padding:9px 38px 9px 14px;border:1.5px solid var(--gold-light);border-radius:24px;font-family:var(--font-sans);font-size:13px;background:var(--cream);color:var(--brown);outline:none;transition:border-color .2s,box-shadow .2s;}
+.search-wrap input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,169,110,.15);}
+.search-wrap input::placeholder{color:var(--grey);}
+.search-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--gold);font-size:14px;pointer-events:none;}
+.header-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.btn-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;transition:background .2s,transform .15s;position:relative;}
+.btn-icon:hover{background:var(--cream-dark);transform:scale(1.05);}
+.cart-badge{position:absolute;top:2px;right:2px;width:18px;height:18px;background:var(--gold);color:var(--white);border-radius:50%;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(0);transition:opacity .2s,transform .2s;}
+.cart-badge.show{opacity:1;transform:scale(1);}
+.shop-status-bar{background:var(--cream-dark);text-align:center;padding:5px 20px;font-size:11px;font-weight:500;letter-spacing:.08em;border-top:1px solid var(--gold-light);}
+.status-open{color:#2d7a3a;}
+.status-closed{color:#c0392b;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--brown) 0%,var(--brown-mid) 60%,#8B4513 100%);color:var(--white);padding:clamp(40px,10vw,90px) 24px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a96e' fill-opacity='0.07'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
+.hero-inner{position:relative;max-width:600px;margin:0 auto;}
+.hero-eyebrow{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:14px;}
+.hero h1{font-family:var(--font-serif);font-size:clamp(32px,8vw,64px);font-weight:300;line-height:1.1;margin-bottom:18px;}
+.hero h1 em{font-style:italic;color:var(--gold-light);}
+.hero p{font-size:clamp(13px,3.5vw,16px);line-height:1.7;color:rgba(255,255,255,.75);font-weight:300;margin-bottom:28px;}
+.hero-cta{display:inline-flex;align-items:center;gap:8px;padding:13px 30px;background:var(--gold);color:var(--white);border-radius:30px;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;transition:background .2s,transform .15s,box-shadow .2s;box-shadow:0 4px 20px rgba(201,169,110,.4);}
+.hero-cta:hover{background:var(--gold-dark);transform:translateY(-2px);box-shadow:0 8px 30px rgba(201,169,110,.5);}
+
+/* QUALITY STRIP */
+.quality-strip{background:var(--gold);padding:18px 24px;display:flex;justify-content:center;gap:clamp(16px,5vw,60px);flex-wrap:wrap;}
+.quality-item{display:flex;align-items:center;gap:8px;color:var(--white);font-size:12px;font-weight:500;letter-spacing:.05em;}
+.quality-item span{font-size:20px;}
+
+/* SECTIONS */
+.section{padding:clamp(30px,6vw,60px) clamp(16px,5vw,40px);}
+.section-title{text-align:center;margin-bottom:clamp(20px,4vw,40px);}
+.section-title h2{font-family:var(--font-serif);font-size:clamp(26px,5vw,42px);font-weight:400;color:var(--brown);margin-bottom:8px;}
+.section-title p{font-size:13px;color:var(--grey);font-weight:300;max-width:480px;margin:0 auto;}
+.divider{width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:12px auto;}
+.container{max-width:1100px;margin:0 auto;}
+
+/* FILTERS */
+.filter-wrap{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:28px;}
+.filter-btn{padding:8px 18px;border-radius:24px;border:1.5px solid var(--gold-light);font-size:12px;font-weight:500;letter-spacing:.04em;color:var(--brown-mid);background:var(--white);transition:all .2s;}
+.filter-btn.active,.filter-btn:hover{background:var(--gold);border-color:var(--gold);color:var(--white);}
+
+/* PRODUCT GRID */
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:clamp(16px,3vw,28px);}
+.product-card{background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:transform .25s,box-shadow .25s;display:flex;flex-direction:column;}
+.product-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-hover);}
+
+/* SLIDESHOW */
+.slideshow{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--cream-dark);}
+.slides-track{display:flex;width:100%;height:100%;transition:transform .45s cubic-bezier(.4,0,.2,1);}
+.slide{min-width:100%;height:100%;flex-shrink:0;}
+.slide img{width:100%;height:100%;object-fit:cover;}
+.slide-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:50px;background:linear-gradient(135deg,var(--cream-dark),var(--gold-light));}
+.slide-prev,.slide-next{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:32px;background:rgba(255,255,255,.9);border-radius:50%;font-size:14px;display:flex;align-items:center;justify-content:center;transition:background .2s,transform .2s;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+.slide-prev{left:8px;}
+.slide-next{right:8px;}
+.slide-prev:hover,.slide-next:hover{background:var(--gold);color:var(--white);transform:translateY(-50%) scale(1.1);}
+.slide-dots{position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;gap:5px;z-index:2;}
+.slide-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.6);transition:background .2s,transform .2s;}
+.slide-dot.active{background:var(--gold);transform:scale(1.3);}
+.product-badge{position:absolute;top:10px;left:10px;background:var(--gold);color:var(--white);font-size:10px;font-weight:600;padding:3px 10px;border-radius:12px;letter-spacing:.05em;text-transform:uppercase;z-index:2;}
+.product-id-badge{position:absolute;top:10px;right:10px;background:rgba(44,26,14,.7);color:var(--gold-light);font-size:9px;font-weight:500;padding:2px 7px;border-radius:10px;letter-spacing:.04em;z-index:2;backdrop-filter:blur(4px);}
+
+/* PRODUCT BODY */
+.product-body{padding:16px;flex:1;display:flex;flex-direction:column;}
+.product-category{font-size:10px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+.product-name{font-family:var(--font-serif);font-size:clamp(17px,3.5vw,21px);font-weight:400;line-height:1.25;margin-bottom:6px;}
+.product-desc{font-size:12px;color:var(--grey);line-height:1.6;font-weight:300;margin-bottom:12px;flex:1;}
+.pricing{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.price-real{font-size:20px;font-weight:600;color:var(--brown);font-family:var(--font-serif);}
+.price-mrp{font-size:13px;color:var(--grey);text-decoration:line-through;}
+.price-off{font-size:11px;font-weight:600;color:#2d7a3a;background:#e8f5e9;padding:2px 7px;border-radius:10px;}
+.product-actions{display:flex;gap:8px;}
+.btn-buy{flex:1;padding:11px 10px;background:#25D366;color:var(--white);border-radius:var(--radius-sm);font-size:12px;font-weight:600;letter-spacing:.05em;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .2s,transform .15s;}
+.btn-buy:hover{background:#1ebe5d;transform:scale(1.02);}
+.btn-cart{flex:1;padding:11px 10px;background:var(--cream-dark);color:var(--brown);border-radius:var(--radius-sm);font-size:12px;font-weight:600;letter-spacing:.05em;border:1.5px solid var(--gold-light);display:flex;align-items:center;justify-content:center;gap:6px;transition:background .2s,border-color .2s;}
+.btn-cart:hover{background:var(--gold-light);border-color:var(--gold);}
+.btn-cart.added{background:var(--gold);border-color:var(--gold);color:var(--white);}
+
+/* CART DRAWER */
+.cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1100;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(2px);}
+.cart-overlay.open{opacity:1;pointer-events:all;}
+.cart-drawer{position:fixed;top:0;right:0;width:min(100vw,380px);height:100vh;background:var(--white);z-index:1101;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:-8px 0 40px rgba(44,26,14,.15);}
+.cart-drawer.open{transform:translateX(0);}
+.cart-header{padding:20px 20px 16px;border-bottom:1px solid var(--gold-light);display:flex;align-items:center;justify-content:space-between;}
+.cart-header h3{font-family:var(--font-serif);font-size:22px;font-weight:400;}
+.cart-close{width:36px;height:36px;border-radius:50%;font-size:18px;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.cart-close:hover{background:var(--cream-dark);}
+.cart-items{flex:1;overflow-y:auto;padding:16px 20px;}
+.cart-empty{text-align:center;padding:60px 20px;color:var(--grey);}
+.cart-empty-icon{font-size:52px;margin-bottom:12px;}
+.cart-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--cream-dark);align-items:center;}
+.cart-item-img{width:60px;height:60px;border-radius:var(--radius-sm);flex-shrink:0;background:var(--cream-dark);display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden;}
+.cart-item-img img{width:100%;height:100%;object-fit:cover;}
+.cart-item-info{flex:1;}
+.cart-item-name{font-size:13px;font-weight:500;margin-bottom:3px;}
+.cart-item-price{font-size:14px;font-weight:600;color:var(--gold-dark);}
+.cart-item-qty{display:flex;align-items:center;gap:8px;margin-top:6px;}
+.qty-btn{width:24px;height:24px;border-radius:50%;background:var(--cream-dark);font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.qty-btn:hover{background:var(--gold-light);}
+.qty-num{font-size:13px;font-weight:600;min-width:16px;text-align:center;}
+.cart-item-remove{font-size:16px;color:var(--grey);transition:color .2s;}
+.cart-item-remove:hover{color:#c0392b;}
+.cart-footer{padding:16px 20px 24px;border-top:1px solid var(--gold-light);background:var(--cream);}
+.cart-total{display:flex;justify-content:space-between;font-size:15px;font-weight:600;margin-bottom:14px;}
+.cart-total span:last-child{color:var(--gold-dark);font-family:var(--font-serif);font-size:20px;}
+.btn-checkout{width:100%;padding:14px;background:#25D366;color:var(--white);border-radius:var(--radius-sm);font-size:14px;font-weight:600;letter-spacing:.05em;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s,transform .15s;}
+.btn-checkout:hover{background:#1ebe5d;transform:scale(1.01);}
+
+/* INFO CARDS */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:20px;}
+.info-card{background:var(--white);border-radius:var(--radius);padding:24px 20px;box-shadow:var(--shadow);border-top:3px solid var(--gold);}
+.info-card-icon{font-size:32px;margin-bottom:12px;}
+.info-card h4{font-family:var(--font-serif);font-size:18px;font-weight:400;margin-bottom:8px;}
+.info-card p{font-size:12.5px;color:var(--grey);line-height:1.7;}
+
+/* TABS */
+.tabs{display:flex;border-bottom:2px solid var(--gold-light);margin-bottom:24px;gap:0;flex-wrap:wrap;}
+.tab-btn{padding:10px 18px;font-size:13px;font-weight:500;color:var(--grey);border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .2s,border-color .2s;}
+.tab-btn.active{color:var(--gold-dark);border-bottom-color:var(--gold);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+.policy-block{background:var(--white);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);}
+.policy-block h4{font-family:var(--font-serif);font-size:20px;font-weight:400;margin-bottom:10px;color:var(--gold-dark);}
+.policy-block p,.policy-block li{font-size:13px;line-height:1.8;color:var(--brown-mid);margin-bottom:8px;}
+.policy-block ul{padding-left:18px;}
+.policy-block li{margin-bottom:4px;}
+
+/* FOOTER */
+footer{background:var(--brown);color:rgba(255,255,255,.7);padding:clamp(30px,6vw,50px) clamp(20px,5vw,60px);text-align:center;}
+.footer-logo{font-family:var(--font-serif);font-size:28px;font-weight:300;color:var(--gold-light);margin-bottom:8px;}
+.footer-tagline{font-size:12px;letter-spacing:.15em;color:var(--gold);margin-bottom:20px;}
+.footer-info{font-size:12px;line-height:2;}
+.footer-divider{width:60px;height:1px;background:var(--gold);margin:20px auto;opacity:.4;}
+.footer-copy{font-size:11px;opacity:.5;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--brown);color:var(--white);padding:12px 24px;border-radius:30px;font-size:13px;font-weight:500;box-shadow:0 8px 30px rgba(0,0,0,.2);z-index:2000;transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s;opacity:0;border-left:4px solid var(--gold);}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+/* RESPONSIVE */
+@media(max-width:480px){
+  .header-top{padding:10px 14px;}
+  .quality-strip{gap:12px;}
+  .quality-item{font-size:11px;}
+  .quality-item span{font-size:16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-top">
+    <div class="logo">
+      <!-- ✏️ Edit shop name here -->
+      <span class="logo-main">La Pâtisserie</span>
+      <span class="logo-sub">Artisan Cake Boutique</span>
+    </div>
+    <div class="search-wrap">
+      <input type="text" id="searchInput" placeholder="Search cakes…" oninput="filterProducts()">
+      <span class="search-icon">🔍</span>
+    </div>
+    <div class="header-actions">
+      <!-- Cart opens ONLY when this basket is clicked -->
+      <button class="btn-icon" id="cartBtn" title="Cart" onclick="toggleCart()">
+        🧺
+        <span class="cart-badge" id="cartBadge">0</span>
+      </button>
+    </div>
+  </div>
+  <!-- Auto open/close status -->
+  <div class="shop-status-bar" id="shopStatusBar"></div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <p class="hero-eyebrow">✦ Handcrafted with Love ✦</p>
+    <!-- ✏️ Edit headline & description -->
+    <h1>Every Bite is a <em>Celebration</em></h1>
+    <p>Experience the finest artisan cakes crafted from premium, locally sourced ingredients. Each creation is a masterpiece baked fresh for your most precious moments.</p>
+    <a href="#products" class="hero-cta">🎂 Explore Our Cakes</a>
+  </div>
+</section>
+
+<!-- QUALITY STRIP -->
+<div class="quality-strip">
+  <div class="quality-item"><span>🌿</span> 100% Fresh Ingredients</div>
+  <div class="quality-item"><span>👨‍🍳</span> Master Baker Crafted</div>
+  <div class="quality-item"><span>🎁</span> Elegant Packaging</div>
+  <div class="quality-item"><span>⏱️</span> Same-Day Delivery</div>
+</div>
+
+<!-- PRODUCTS -->
+<section class="section" id="products">
+  <div class="container">
+    <div class="section-title">
+      <h2>Our Signature Collection</h2>
+      <div class="divider"></div>
+      <p>Each cake is baked to order using premium ingredients — no preservatives, no compromises.</p>
+    </div>
+    <!-- Category Filters -->
+    <div class="filter-wrap">
+      <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-btn" onclick="setFilter('classic',this)">Classic</button>
+      <button class="filter-btn" onclick="setFilter('premium',this)">Premium</button>
+      <button class="filter-btn" onclick="setFilter('custom',this)">Custom</button>
+      <button class="filter-btn" onclick="setFilter('eggless',this)">Eggless</button>
+    </div>
+    <div class="product-grid" id="productGrid"></div>
+  </div>
+</section>
+
+<!-- WHY US -->
+<section class="section" style="background:var(--cream-dark);" id="about">
+  <div class="container">
+    <div class="section-title">
+      <h2>Why We Are Different</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-card-icon">🌸</div>
+        <h4>Finest Ingredients</h4>
+        <p>We use only Belgian couverture chocolate, French butter, farm-fresh eggs, and seasonal fruits. No artificial flavours, no shortcuts — ever.</p>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">🎨</div>
+        <h4>Handcrafted Artistry</h4>
+        <p>Each cake is sculpted and decorated by hand by our master bakers with 10+ years of experience. No two cakes are alike.</p>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">❄️</div>
+        <h4>Fresh Every Day</h4>
+        <p>Baked fresh daily with no preservatives. Our cakes are delivered in temperature-controlled packaging to ensure perfect freshness at your doorstep.</p>
+      </div>
+      <div class="info-card">
+        <div class="info-card-icon">💎</div>
+        <h4>Luxury Experience</h4>
+        <p>From the first click to the final bite, we ensure a premium experience. Elegant boxes, ribbon ties, and personalised cards included.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POLICIES -->
+<section class="section" id="policies">
+  <div class="container">
+    <div class="section-title">
+      <h2>Our Commitments to You</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('return',this)">Return Policy</button>
+      <button class="tab-btn" onclick="showTab('terms',this)">Terms & Conditions</button>
+      <button class="tab-btn" onclick="showTab('faq',this)">FAQ</button>
+    </div>
+    <div class="tab-panel active" id="tab-return">
+      <div class="policy-block">
+        <h4>🔄 Return &amp; Refund Policy</h4>
+        <p><strong>Our Guarantee:</strong> We stand behind every cake we create. Your satisfaction is our highest priority.</p>
+        <ul>
+          <li><strong>Quality Issues:</strong> If your cake arrives damaged, incorrect, or does not meet quality standards, please contact us within <strong>2 hours of delivery</strong> with a photo. We will replace or fully refund.</li>
+          <li><strong>Cancellations:</strong> Orders cancelled <strong>48 hours before</strong> the delivery date receive a full refund. Within 24 hours, a 50% cancellation charge applies.</li>
+          <li><strong>Customised Orders:</strong> Since custom cakes are made specifically for you, they are non-refundable once baking begins — however, we will always work to resolve any concern.</li>
+          <li><strong>Taste Concerns:</strong> We use premium, natural ingredients. If you are unhappy with the flavour for a genuine reason, reach out — we will happily offer a store credit.</li>
+          <li><strong>Allergen Responsibility:</strong> Please inform us of all dietary requirements at the time of ordering. We cannot accept returns due to undisclosed allergen concerns.</li>
+          <li><strong>Refund Timeline:</strong> Approved refunds are processed within 5–7 business days to your original payment method.</li>
+        </ul>
+        <p style="margin-top:12px"><strong>Contact for returns:</strong> Simply click the WhatsApp button on any product and mention your concern.</p>
+      </div>
+    </div>
+    <div class="tab-panel" id="tab-terms">
+      <div class="policy-block">
+        <h4>📋 Terms &amp; Conditions</h4>
+        <ul>
+          <li>All orders are subject to availability and confirmation of the order price.</li>
+          <li>Prices are inclusive of applicable taxes unless stated otherwise. Delivery charges may apply based on location.</li>
+          <li>We reserve the right to substitute any ingredient with an equivalent if unavailable, while maintaining quality standards.</li>
+          <li>Delivery time slots are indicative. We aim for punctuality but cannot be held liable for delays beyond our control (traffic, weather, etc.).</li>
+          <li>Photographs on this website are representative. Actual product may vary slightly in appearance due to the handcrafted nature of our cakes.</li>
+          <li>By placing an order, you confirm that you are 18 years or older and legally capable of entering into a contract.</li>
+          <li>We reserve the right to decline or cancel any order at our discretion.</li>
+          <li>All content on this website — images, text, and design — is the intellectual property of La Pâtisserie.</li>
+          <li>Personal data collected during ordering is used solely for order fulfilment and will not be shared with third parties.</li>
+          <li>Disputes shall be resolved amicably or through applicable local consumer courts.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="tab-panel" id="tab-faq">
+      <div class="policy-block">
+        <h4>❓ Frequently Asked Questions</h4>
+        <p><strong>How far in advance should I order?</strong><br>For standard cakes, 24 hours notice is sufficient. For custom or wedding cakes, we recommend 5–7 days advance notice.</p>
+        <p><strong>Do you offer eggless options?</strong><br>Yes! All our cakes can be made eggless on request. Look for the 🌿 Eggless tag or simply ask us via WhatsApp.</p>
+        <p><strong>Can I add a personalised message?</strong><br>Absolutely. Mention your message when ordering on WhatsApp and we will write it on the cake in edible ink.</p>
+        <p><strong>Do you deliver outside the city?</strong><br>Currently we deliver within 20 km of our bakery. For outstation orders, please contact us in advance.</p>
+        <p><strong>What payment methods do you accept?</strong><br>UPI, bank transfer, cash on delivery, and all major cards via our payment link.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">La Pâtisserie</div>
+  <div class="footer-tagline">✦ ARTISAN CAKE BOUTIQUE ✦</div>
+  <div class="footer-info">
+    <!-- ✏️ Edit shop address & contact -->
+    📍 123, Baker Street, Your City — 400001<br>
+    📞 +91 98765 43210 &nbsp;|&nbsp; ⏰ Open: 9:00 AM – 9:00 PM<br>
+    📅 Monday to Sunday (Including Holidays)
+  </div>
+  <div class="footer-divider"></div>
+  <div class="footer-copy">© 2025 La Pâtisserie. All rights reserved. Made with 🍰 &amp; ❤️</div>
+</footer>
+
+<!-- CART DRAWER -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-header">
+    <h3>🧺 Your Cart</h3>
+    <button class="cart-close" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItemsList"></div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-total">
+      <span>Total</span>
+      <span id="cartTotal">₹0</span>
+    </div>
+    <button class="btn-checkout" onclick="checkoutWhatsApp()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.557 4.126 1.528 5.862L0 24l6.335-1.652A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75c-1.942 0-3.764-.523-5.323-1.435l-.38-.227-3.962 1.035 1.055-3.853-.249-.397A9.718 9.718 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+      Order All via WhatsApp
+    </button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   ✏️  SHOP SETTINGS — Edit these to customise your shop
+══════════════════════════════════════════════════════ */
+const SHOP = {
+  name: 'La Pâtisserie',     // ✏️ Your shop name
+  openHour:  9,              // ✏️ Opening hour (24h) e.g. 9 = 9:00 AM
+  closeHour: 21,             // ✏️ Closing hour (24h) e.g. 21 = 9:00 PM
+  whatsapp: '919876543210',  // ✏️ Your WhatsApp number with country code (no + or spaces)
+};
+
+/* ══════════════════════════════════════════════════════
+   ✏️  PRODUCT DATA
+   To add a product: copy one object and change the values.
+   id:      Unique product code (shown on product + sent to WhatsApp)
+   images:  Array of image URLs. Use '' for emoji placeholder.
+            Add as many images as you want! e.g. ['url1','url2','url3']
+   mrp:     Original price (shown with strikethrough)
+   price:   Selling price (discount % calculated automatically)
+   category: 'classic' | 'premium' | 'custom' | 'eggless'
+   badge:   Small label on image (leave '' to hide)
+══════════════════════════════════════════════════════ */
+const PRODUCTS = [
+  {
+    id: 'LP🎂001',
+    name: 'Belgian Dark Chocolate Cake',
+    category: 'premium',
+    desc: 'Rich layers of 70% Belgian couverture chocolate ganache, feuilletine crunch, and gold-dusted cocoa sponge.',
+    mrp: 2200,
+    price: 1699,
+    emoji: '🍫',
+    images: ['', ''],   // ✏️ Replace '' with actual image URLs
+    badge: 'Best Seller'
+  },
+  {
+    id: 'LP🌸002',
+    name: 'Strawberry Dream Chiffon',
+    category: 'classic',
+    desc: 'Airy Japanese chiffon sponge layered with fresh strawberry compote and whipped Chantilly cream.',
+    mrp: 1800,
+    price: 1299,
+    emoji: '🍓',
+    images: ['', ''],
+    badge: 'Fresh Pick'
+  },
+  {
+    id: 'LP🌿003',
+    name: 'Eggless Mango Delight',
+    category: 'eggless',
+    desc: 'Pure Alphonso mango mousse cake on an almond sponge base — 100% eggless, 100% divine.',
+    mrp: 1600,
+    price: 1199,
+    emoji: '🥭',
+    images: ['', ''],
+    badge: 'Eggless 🌿'
+  },
+  {
+    id: 'LP💍004',
+    name: 'Velvet Rose Wedding Tier',
+    category: 'custom',
+    desc: 'Three-tier custom wedding cake in ivory fondant with handmade sugar roses. Fully personalised.',
+    mrp: 8500,
+    price: 6999,
+    emoji: '💍',
+    images: ['', ''],
+    badge: 'Custom'
+  },
+  {
+    id: 'LP🍋005',
+    name: 'Lemon Lavender Gâteau',
+    category: 'classic',
+    desc: 'Bright lemon curd, Earl Grey cream, and floral lavender sponge for a truly elegant flavour profile.',
+    mrp: 1700,
+    price: 1349,
+    emoji: '🍋',
+    images: ['', ''],
+    badge: ''
+  },
+  {
+    id: 'LP✨006',
+    name: 'Gold Leaf Truffle Cake',
+    category: 'premium',
+    desc: 'Hazelnut praline, dark truffle layers, and edible 24k gold leaf finish. The ultimate luxury statement.',
+    mrp: 3200,
+    price: 2499,
+    emoji: '✨',
+    images: ['', ''],
+    badge: 'Luxury'
+  },
+  {
+    id: 'LP🎈007',
+    name: 'Rainbow Funfetti Birthday',
+    category: 'classic',
+    desc: 'Colourful vanilla sponge packed with funfetti, cream cheese frosting, and a sprinkle explosion.',
+    mrp: 1400,
+    price: 999,
+    emoji: '🎈',
+    images: ['', ''],
+    badge: 'Party Hit'
+  },
+  {
+    id: 'LP🌺008',
+    name: 'Eggless Red Velvet',
+    category: 'eggless',
+    desc: 'Classic red velvet with beetroot-tinted sponge and smooth cream cheese frosting — completely eggless.',
+    mrp: 1750,
+    price: 1349,
+    emoji: '🌺',
+    images: ['', ''],
+    badge: 'Eggless 🌿'
+  }
+];
+
+/* ══════ STATE ══════ */
+let cart = [];
+let currentFilter = 'all';
+let slideIndex = {};
+let backPressCount = 0;
+
+/* ══════ BACK BUTTON: 1st press = scroll top (refresh feel), 2nd = exit ══════ */
+window.history.pushState(null, '', window.location.href);
+window.addEventListener('popstate', () => {
+  backPressCount++;
+  if (backPressCount === 1) {
+    window.history.pushState(null, '', window.location.href);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showToast('🔄 Press back again to exit');
+    setTimeout(() => { backPressCount = 0; }, 3000);
+  } else {
+    window.history.back();
+  }
+});
+
+/* ══════ SHOP STATUS (auto open/close by time) ══════ */
+function updateShopStatus() {
+  const h = new Date().getHours();
+  const bar = document.getElementById('shopStatusBar');
+  const isOpen = h >= SHOP.openHour && h < SHOP.closeHour;
+  const fmt = hr => `${hr > 12 ? hr - 12 : (hr === 0 ? 12 : hr)}:00 ${hr >= 12 ? 'PM' : 'AM'}`;
+  if (isOpen) {
+    bar.innerHTML = `<span class="status-open">🟢 We are OPEN — Accepting orders until ${fmt(SHOP.closeHour)}</span>`;
+  } else {
+    bar.innerHTML = `<span class="status-closed">🔴 We are CLOSED — Opens at ${fmt(SHOP.openHour)}</span>`;
+  }
+}
+updateShopStatus();
+setInterval(updateShopStatus, 60000);
+
+/* ══════ RENDER PRODUCTS ══════ */
+function safeKey(id) { return id.replace(/[^a-zA-Z0-9]/g, '_'); }
+
+function renderProducts(list) {
+  const grid = document.getElementById('productGrid');
+  if (!list.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--grey)"><div style="font-size:48px;margin-bottom:12px">🔍</div><p>No cakes found. Try a different search!</p></div>`;
+    return;
+  }
+  grid.innerHTML = list.map(p => {
+    const disc = Math.round(((p.mrp - p.price) / p.mrp) * 100);
+    const k = safeKey(p.id);
+    const hasMultiple = p.images.length > 1;
+    const slides = p.images.map(src =>
+      src ? `<div class="slide"><img src="${src}" alt="${p.name}" loading="lazy"></div>`
+           : `<div class="slide"><div class="slide-placeholder">${p.emoji}</div></div>`
+    ).join('');
+    const dots = hasMultiple ? p.images.map((_, i) =>
+      `<div class="slide-dot ${i===0?'active':''}" onclick="goToSlide('${p.id}',${i})"></div>`
+    ).join('') : '';
+    return `
+    <div class="product-card">
+      <div class="slideshow">
+        ${p.badge ? `<div class="product-badge">${p.badge}</div>` : ''}
+        <div class="product-id-badge">${p.id}</div>
+        <div class="slides-track" id="track-${k}">${slides}</div>
+        ${hasMultiple ? `
+          <button class="slide-prev" onclick="slideChange('${p.id}',-1)">&#8249;</button>
+          <button class="slide-next" onclick="slideChange('${p.id}',1)">&#8250;</button>
+          <div class="slide-dots" id="dots-${k}">${dots}</div>` : ''}
+      </div>
+      <div class="product-body">
+        <div class="product-category">${p.category.charAt(0).toUpperCase()+p.category.slice(1)}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-desc">${p.desc}</div>
+        <div class="pricing">
+          <span class="price-real">&#x20B9;${p.price.toLocaleString('en-IN')}</span>
+          <span class="price-mrp">MRP &#x20B9;${p.mrp.toLocaleString('en-IN')}</span>
+          ${disc > 0 ? `<span class="price-off">${disc}% OFF</span>` : ''}
+        </div>
+        <div class="product-actions">
+          <button class="btn-buy" onclick="buyNow('${p.id}')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.557 4.126 1.528 5.862L0 24l6.335-1.652A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75c-1.942 0-3.764-.523-5.323-1.435l-.38-.227-3.962 1.035 1.055-3.853-.249-.397A9.718 9.718 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>
+            Buy Now
+          </button>
+          <button class="btn-cart" id="cartbtn-${k}" onclick="addToCart('${p.id}')">
+            🧺 Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  list.forEach(p => { slideIndex[p.id] = 0; });
+}
+
+/* ══════ SLIDESHOW ══════ */
+function slideChange(id, dir) {
+  const p = PRODUCTS.find(x => x.id === id);
+  if (!p) return;
+  slideIndex[id] = (slideIndex[id] + dir + p.images.length) % p.images.length;
+  updateSlide(id);
+}
+function goToSlide(id, i) {
+  slideIndex[id] = i;
+  updateSlide(id);
+}
+function updateSlide(id) {
+  const k = safeKey(id);
+  const track = document.getElementById('track-' + k);
+  if (track) track.style.transform = `translateX(-${slideIndex[id] * 100}%)`;
+  const dotsEl = document.getElementById('dots-' + k);
+  if (dotsEl) dotsEl.querySelectorAll('.slide-dot').forEach((d, i) =>
+    d.classList.toggle('active', i === slideIndex[id]));
+}
+
+/* ══════ FILTER ══════ */
+function setFilter(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+function filterProducts() { applyFilters(); }
+function applyFilters() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = PRODUCTS.filter(p => {
+    const okCat = currentFilter === 'all' || p.category === currentFilter;
+    const okQ   = !q || p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q);
+    return okCat && okQ;
+  });
+  renderProducts(filtered);
+}
+
+/* ══════ CART ══════ */
+function getProduct(id) { return PRODUCTS.find(p => p.id === id); }
+
+function addToCart(id) {
+  const p = getProduct(id);
+  if (!p) return;
+  const ex = cart.find(c => c.id === id);
+  if (ex) ex.qty++;
+  else cart.push({ id, qty: 1 });
+  updateCartBadge();
+  showToast(`✅ "${p.name}" added!`);
+  const k = safeKey(id);
+  const btn = document.getElementById('cartbtn-' + k);
+  if (btn) {
+    btn.classList.add('added');
+    btn.textContent = '✓ Added';
+    setTimeout(() => { btn.classList.remove('added'); btn.innerHTML = '🧺 Add to Cart'; }, 1600);
+  }
+}
+
+function updateCartBadge() {
+  const total = cart.reduce((s, c) => s + c.qty, 0);
+  const badge = document.getElementById('cartBadge');
+  badge.textContent = total;
+  badge.classList.toggle('show', total > 0);
+}
+
+/* Cart opens ONLY when basket icon is clicked */
+function toggleCart() {
+  const drawer = document.getElementById('cartDrawer');
+  const overlay = document.getElementById('cartOverlay');
+  const isOpen = drawer.classList.contains('open');
+  if (!isOpen) renderCart();
+  drawer.classList.toggle('open', !isOpen);
+  overlay.classList.toggle('open', !isOpen);
+  document.body.style.overflow = isOpen ? '' : 'hidden';
+}
+
+function renderCart() {
+  const list = document.getElementById('cartItemsList');
+  const footer = document.getElementById('cartFooter');
+  if (!cart.length) {
+    list.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🧺</div><p>Your cart is empty.<br>Add some delicious cakes!</p></div>`;
+    footer.style.display = 'none';
+    return;
+  }
+  let total = 0;
+  list.innerHTML = cart.map(c => {
+    const p = getProduct(c.id);
+    if (!p) return '';
+    total += p.price * c.qty;
+    const imgHTML = p.images[0] ? `<img src="${p.images[0]}" alt="${p.name}">` : p.emoji;
+    return `<div class="cart-item">
+      <div class="cart-item-img">${imgHTML}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${p.name}</div>
+        <div class="cart-item-price">&#x20B9;${(p.price*c.qty).toLocaleString('en-IN')}</div>
+        <div class="cart-item-qty">
+          <button class="qty-btn" onclick="changeQty('${c.id}',-1)">&#8722;</button>
+          <span class="qty-num">${c.qty}</span>
+          <button class="qty-btn" onclick="changeQty('${c.id}',1)">+</button>
+        </div>
+      </div>
+      <button class="cart-item-remove" onclick="removeFromCart('${c.id}')">🗑️</button>
+    </div>`;
+  }).join('');
+  document.getElementById('cartTotal').textContent = `₹${total.toLocaleString('en-IN')}`;
+  footer.style.display = 'block';
+}
+
+function changeQty(id, dir) {
+  const item = cart.find(c => c.id === id);
+  if (!item) return;
+  item.qty = Math.max(1, item.qty + dir);
+  updateCartBadge();
+  renderCart();
+}
+function removeFromCart(id) {
+  cart = cart.filter(c => c.id !== id);
+  updateCartBadge();
+  renderCart();
+}
+
+/* ══════ WHATSAPP — Buy Now (single product) ══════ */
+function buyNow(id) {
+  const p = getProduct(id);
+  if (!p) return;
+  const disc = Math.round(((p.mrp - p.price) / p.mrp) * 100);
+  const save = (p.mrp - p.price).toLocaleString('en-IN');
+  const msg = [
+    `🎂 *ORDER — ${SHOP.name}*`,
+    ``,
+    `🆔 Product Code: *${p.id}*`,
+    `📦 *${p.name}*`,
+    `📂 Category: ${p.category.charAt(0).toUpperCase() + p.category.slice(1)}`,
+    ``,
+    `💰 Price: ₹${p.price.toLocaleString('en-IN')}`,
+    `🏷️ MRP: ₹${p.mrp.toLocaleString('en-IN')}`,
+    `🎉 You Save: ₹${save} (${disc}% OFF)`,
+    ``,
+    `📝 ${p.desc}`,
+    ``,
+    `Please confirm my order. Thank you! 🙏`
+  ].join('\n');
+  window.open(`https://wa.me/${SHOP.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+/* ══════ WHATSAPP — Full Cart Checkout ══════ */
+function checkoutWhatsApp() {
+  if (!cart.length) return;
+  let total = 0;
+  const lines = cart.map(c => {
+    const p = getProduct(c.id);
+    if (!p) return '';
+    total += p.price * c.qty;
+    return `• ${p.id} | ${p.name} × ${c.qty} = ₹${(p.price*c.qty).toLocaleString('en-IN')}`;
+  }).filter(Boolean);
+  const msg = [
+    `🎂 *CART ORDER — ${SHOP.name}*`,
+    ``,
+    `🛒 *Items:*`,
+    ...lines,
+    ``,
+    `💵 *Total: ₹${total.toLocaleString('en-IN')}*`,
+    ``,
+    `Please confirm my order. Thank you! 🙏`
+  ].join('\n');
+  window.open(`https://wa.me/${SHOP.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+/* ══════ TABS ══════ */
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+/* ══════ TOAST ══════ */
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+/* ══════ INIT ══════ */
+renderProducts(PRODUCTS);
+</script>
+</body>
+</html>
