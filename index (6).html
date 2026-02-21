@@ -1,0 +1,2036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Purnendra Bakery | Luxury Party & Cake Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --gold: #b8860b;
+            --gold2: #d4af37;
+            --cream: #fffafb;
+            --amber-dark: #78350f;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Poppins', sans-serif; background: var(--cream); overflow-x: hidden; }
+        .heading-font { font-family: 'Playfair Display', serif; }
+        .gold-text { color: var(--gold); }
+        .gold-bg { background: linear-gradient(135deg, var(--gold2) 0%, var(--gold) 100%); }
+        .glass { background: rgba(255,255,255,0.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+
+        /* CLOSED BANNER */
+        #closedBanner {
+            display: none;
+            position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white; text-align: center; font-size: 13px; font-weight: 700;
+            padding: 6px 12px; letter-spacing: 0.05em;
+        }
+        body.shop-closed #closedBanner { display: block; }
+        body.shop-closed #mainNav { top: 32px; }
+        body.shop-closed header { margin-top: calc(4rem + 32px); }
+        @media(min-width:768px){ body.shop-closed header { margin-top: calc(5rem + 32px); } }
+
+        #mainNav {
+            position: fixed; top: 0; width: 100%; z-index: 200;
+            border-bottom: 1px solid #fef3c7;
+        }
+        #headerSearch { transition: all 0.3s ease; }
+
+        .hero-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1.2s ease-in-out; }
+        .hero-slide.active { opacity: 1; z-index: 10; }
+        .hero-dots button { transition: all 0.3s; }
+        .hero-dots button.active { background: var(--gold2); transform: scale(1.3); }
+
+        .product-card {
+            background: white; border-radius: 2rem; overflow: hidden;
+            display: flex; flex-direction: column;
+            border: 1px solid #fef3c7; box-shadow: 0 2px 20px rgba(0,0,0,0.04);
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+        .product-card:hover { box-shadow: 0 8px 40px rgba(184,134,11,0.12); transform: translateY(-3px); }
+
+        .gallery-wrap { position: relative; overflow: hidden; background: #f9f5f0; }
+        .gallery-track { display: flex; transition: transform 0.45s cubic-bezier(0.4,0,0.2,1); height: 100%; }
+        .gallery-track img { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; cursor: zoom-in; }
+
+        .gallery-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(255,255,255,0.9); border: none; border-radius: 50%;
+            width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 20; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: background 0.2s;
+        }
+        .gallery-arrow:hover { background: white; }
+        .gallery-arrow.left { left: 8px; }
+        .gallery-arrow.right { right: 8px; }
+
+        .gallery-dots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 20; }
+        .gallery-dots span {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: rgba(255,255,255,0.6); transition: all 0.3s; cursor: pointer;
+        }
+        .gallery-dots span.active { background: white; transform: scale(1.4); }
+
+        /* Unicode badge on product */
+        .unicode-badge {
+            position: absolute; bottom: 8px; right: 8px; z-index: 20;
+            background: rgba(0,0,0,0.65); color: white;
+            font-size: 10px; padding: 2px 7px; border-radius: 20px;
+            font-weight: 700; letter-spacing: 0.04em;
+            backdrop-filter: blur(4px);
+        }
+
+        .discount-badge {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white; font-size: 9px; font-weight: 800;
+            padding: 3px 8px; border-radius: 20px;
+        }
+
+        #sideMenu, #cartDrawer { transition: transform 0.42s cubic-bezier(0.16,1,0.3,1); z-index: 300; }
+        .side-open { transform: translateX(0) !important; }
+        #menuOverlay, #cartOverlay { transition: opacity 0.3s; backdrop-filter: blur(4px); }
+
+        #zoomOverlay {
+            background: rgba(0,0,0,0.92);
+            display: none; align-items: center; justify-content: center; z-index: 500;
+        }
+
+        @keyframes marqueeScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .marquee-inner { display: flex; width: max-content; animation: marqueeScroll 30s linear infinite; }
+        .marquee-inner:hover { animation-play-state: paused; }
+
+        @media (max-width: 640px) {
+            .product-card { border-radius: 1.5rem; }
+            .gallery-arrow { width: 26px; height: 26px; }
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .gallery-wrap { touch-action: pan-y; }
+        .filter-btn.active { background: #78350f; color: white; }
+
+        #searchBar { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+        #searchBar.open { max-height: 80px; }
+
+        /* Quality strip */
+        .quality-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #fef9ee; border: 1px solid #fde68a;
+            border-radius: 50px; padding: 6px 14px;
+            font-size: 11px; font-weight: 600; color: #78350f;
+            white-space: nowrap;
+        }
+
+        /* Policy / T&C cards */
+        .policy-card {
+            border-radius: 2rem; padding: 28px; border: 1px solid;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+            z-index: 600; display: none; align-items: flex-end; justify-content: center;
+            backdrop-filter: blur(6px);
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: white; width: 100%; max-width: 680px;
+            border-radius: 2rem 2rem 0 0; max-height: 85vh;
+            overflow-y: auto; padding: 28px 24px 40px;
+            animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+        @media(min-width:640px){ .modal-box { border-radius: 2rem; margin-bottom: 5vh; } }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal-box h2 { font-family: 'Playfair Display', serif; color: #b8860b; font-size: 1.6rem; margin-bottom: 16px; }
+        .modal-box h3 { font-weight: 700; color: #78350f; font-size: 0.95rem; margin: 16px 0 6px; }
+        .modal-box p, .modal-box li { font-size: 0.82rem; color: #555; line-height: 1.75; }
+        .modal-box ul { padding-left: 16px; }
+        .modal-box ul li { list-style: disc; margin-bottom: 4px; }
+
+        /* Status indicator */
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+        .status-dot.open { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.2); animation: pulse 1.5s infinite; }
+        .status-dot.closed { background: #ef4444; }
+        @keyframes pulse { 0%,100%{ box-shadow: 0 0 0 3px rgba(34,197,94,0.2); } 50%{ box-shadow: 0 0 0 6px rgba(34,197,94,0.05); } }
+
+        /* UPI Payment Modal specifics */
+        .pay-method-btn {
+            border: 2px solid #fde68a; border-radius: 1.2rem; padding: 16px 14px;
+            cursor: pointer; transition: all 0.25s; background: #fffbeb; width: 100%;
+            display: flex; align-items: center; gap: 12px; text-align: left;
+            box-shadow: 0 2px 8px rgba(184,134,11,0.06);
+        }
+        .pay-method-btn:hover { border-color: #b8860b; background: #fef9ee; box-shadow: 0 4px 16px rgba(184,134,11,0.18); transform: translateY(-1px); }
+        .pay-method-btn.selected { border-color: #b8860b; background: linear-gradient(135deg,#fef9ee,#fef3c7); box-shadow: 0 0 0 3px rgba(184,134,11,0.18), 0 4px 16px rgba(184,134,11,0.14); }
+        #btnUPI.selected { border-color: #16a34a; background: linear-gradient(135deg,#f0fdf4,#dcfce7); box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
+        .pay-method-btn .pay-icon { font-size: 30px; flex-shrink: 0; }
+        .pay-method-btn .pay-label { font-weight: 800; font-size: 14px; color: #78350f; }
+        .pay-method-btn .pay-sub { font-size: 10px; color: #92400e; opacity: 0.7; margin-top: 2px; }
+
+        /* UPI QR area */
+        #upiSection { display: none; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .qr-box {
+            background: white; border: 3px solid #fde68a; border-radius: 1.5rem;
+            padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 8px;
+        }
+        .qr-box canvas, .qr-box img { border-radius: 8px; }
+        .upi-id-pill {
+            background: #fef3c7; border: 1px solid #fde68a; border-radius: 50px;
+            padding: 6px 16px; font-size: 13px; font-weight: 700; color: #78350f;
+            display: flex; align-items: center; gap: 8px; cursor: pointer;
+            transition: background 0.2s;
+        }
+        .upi-id-pill:hover { background: #fde68a; }
+
+        .screenshot-tip {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            border: 1px solid #86efac; border-radius: 1rem; padding: 12px 14px;
+            display: flex; align-items: flex-start; gap: 10px;
+        }
+        .screenshot-tip .tip-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+        .screenshot-tip p { font-size: 11px; color: #166534; font-weight: 600; line-height: 1.6; }
+
+        /* Step badges */
+        .step-badge {
+            width: 22px; height: 22px; border-radius: 50%; background: #78350f;
+            color: white; font-size: 11px; font-weight: 800; display: inline-flex;
+            align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        
+        /* Shimmer on copy button */
+        @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+        .copy-success { background: linear-gradient(90deg,#22c55e,#4ade80,#22c55e); background-size:200% 100%; animation:shimmer 1s linear; color:white; }
+
+        /* ICON CATEGORY BAR */
+        .cat-icon-bar { display:flex; gap:10px; overflow-x:auto; padding:4px 2px 8px; scrollbar-width:none; -ms-overflow-style:none; }
+        .cat-icon-bar::-webkit-scrollbar { display:none; }
+        .cat-icon-btn { display:flex; flex-direction:column; align-items:center; gap:5px; min-width:62px; cursor:pointer; flex-shrink:0; transition:transform 0.18s; user-select:none; -webkit-user-select:none; }
+        .cat-icon-btn:active { transform:scale(0.9); }
+        .cat-icon-circle { width:56px; height:56px; border-radius:50%; background:#fef9ee; border:2.5px solid #fde68a; display:flex; align-items:center; justify-content:center; font-size:26px; transition:all 0.22s; box-shadow:0 2px 10px rgba(184,134,11,0.08); }
+        .cat-icon-btn.cat-active .cat-icon-circle, .cat-icon-btn:hover .cat-icon-circle { background:#78350f; border-color:#78350f; box-shadow:0 4px 18px rgba(120,53,15,0.28); transform:translateY(-3px); }
+        .cat-icon-label { font-size:10px; font-weight:700; color:#92400e; letter-spacing:0.02em; text-align:center; }
+        .cat-icon-btn.cat-active .cat-icon-label { color:#78350f; }
+        @media(max-width:360px){ .cat-icon-circle{width:46px;height:46px;font-size:20px;} .cat-icon-btn{min-width:50px;} }
+
+        /* LOGIN MODAL */
+        .login-tab { padding:8px 20px; font-weight:700; font-size:13px; border-radius:50px; cursor:pointer; transition:all 0.2s; color:#92400e; }
+        .login-tab.active { background:#78350f; color:white; }
+        .login-input { width:100%; padding:12px 16px; border:2px solid #fde68a; border-radius:14px; font-size:14px; outline:none; font-family:'Poppins',sans-serif; transition:border-color 0.2s; background:#fffbeb; color:#1c1917; }
+        .login-input:focus { border-color:#b8860b; background:white; }
+        .login-btn { width:100%; padding:13px; border-radius:14px; font-weight:800; font-size:14px; cursor:pointer; transition:all 0.2s; border:none; }
+        .login-avatar { width:34px; height:34px; border-radius:50%; background:#fef3c7; border:2px solid #fde68a; display:flex; align-items:center; justify-content:center; font-size:15px; cursor:pointer; font-weight:700; color:#78350f; transition:all 0.2s; flex-shrink:0; }
+        .login-avatar:hover { background:#fde68a; }
+        #guestBadge { font-size:10px; color:#92400e; background:#fef9ee; border:1px solid #fde68a; border-radius:50px; padding:3px 10px; display:inline-flex; align-items:center; gap:4px; white-space:nowrap; }
+    </style>
+</head>
+<body class="text-gray-900">
+
+<!-- CLOSED BANNER -->
+<div id="closedBanner">🔴 Shop is currently CLOSED &nbsp;|&nbsp; Mon–Sat: 9AM–10PM &nbsp;|&nbsp; Sun: 10AM–11PM</div>
+
+<!-- ==========================================
+     HEADER NAVIGATION
+========================================== -->
+<nav id="mainNav" class="glass">
+    <div class="h-16 md:h-20 px-3 md:px-8 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 md:gap-4">
+            <button onclick="toggleMenu(true)" class="p-2.5 bg-amber-50 hover:bg-amber-100 rounded-xl transition-all" aria-label="Menu">
+                <i data-lucide="menu" class="text-amber-800 w-5 h-5"></i>
+            </button>
+            <div class="cursor-pointer" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+                <h1 class="heading-font text-xl md:text-3xl font-bold gold-text leading-none">Purnendra</h1>
+                <p class="text-[8px] md:text-[9px] uppercase tracking-[0.3em] font-bold text-gray-400">Bakery & Party Store</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="toggleSearch()" class="p-2.5 bg-amber-50 hover:bg-amber-100 rounded-xl transition-all" aria-label="Search">
+                <i data-lucide="search" class="text-amber-800 w-5 h-5"></i>
+            </button>
+            <!-- Login / Profile button -->
+            <button id="navLoginBtn" onclick="handleLoginBtnClick()" class="login-avatar" aria-label="Login" title="Login / My Account">
+                <span id="navAvatarLabel">👤</span>
+            </button>
+            <button onclick="toggleCart(true)" class="relative p-3 md:p-4 gold-bg text-white rounded-xl md:rounded-2xl shadow-lg hover:scale-105 transition-transform active:scale-95" aria-label="Cart">
+                <i data-lucide="shopping-cart" class="w-5 h-5 md:w-6 md:h-6"></i>
+                <span id="cart-count" class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold border-2 border-white">0</span>
+            </button>
+        </div>
+    </div>
+    <div id="searchBar" class="border-t border-amber-50">
+        <div class="px-4 py-3 flex items-center gap-3">
+            <i data-lucide="search" class="text-amber-500 w-4 h-4 shrink-0"></i>
+            <input type="text" id="mainSearch" onkeyup="filterBySearch()" placeholder="Search by name or Product ID (e.g. CK-01)..."
+                class="flex-1 bg-transparent outline-none text-sm font-medium text-gray-700 placeholder-gray-400">
+            <button onclick="toggleSearch(false)" class="text-gray-400 hover:text-gray-600">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- SIDE MENU -->
+<div id="menuOverlay" class="fixed inset-0 bg-black/50 z-[250] hidden opacity-0" onclick="toggleMenu(false)"></div>
+<aside id="sideMenu" class="fixed left-0 top-0 h-full w-72 md:w-80 bg-white shadow-2xl flex flex-col translate-x-[-100%] z-[300]">
+    <div class="flex justify-between items-center p-6 border-b border-amber-50">
+        <h2 class="heading-font text-2xl gold-text font-bold">Menu</h2>
+        <button onclick="toggleMenu(false)" class="p-2 text-rose-400 hover:bg-rose-50 rounded-full"><i data-lucide="x"></i></button>
+    </div>
+    <div class="flex-1 overflow-y-auto p-4 space-y-1">
+        <a href="#" onclick="toggleMenu(false)" class="flex items-center gap-3 p-3 hover:bg-amber-50 rounded-xl font-semibold text-gray-700 text-sm">
+            <i data-lucide="home" class="w-4 h-4 text-amber-700"></i> Home</a>
+        <a href="#shop" onclick="toggleMenu(false); filterItems('Cake')" class="flex items-center gap-3 p-3 hover:bg-amber-50 rounded-xl font-semibold text-gray-700 text-sm">
+            <i data-lucide="cake" class="w-4 h-4 text-amber-700"></i> Cakes</a>
+        <a href="#shop" onclick="toggleMenu(false); filterItems('Chocolate')" class="flex items-center gap-3 p-3 hover:bg-amber-50 rounded-xl font-semibold text-gray-700 text-sm">
+            <i data-lucide="sparkles" class="w-4 h-4 text-amber-700"></i> Chocolates</a>
+        <a href="#shop" onclick="toggleMenu(false); filterItems('Pastry')" class="flex items-center gap-3 p-3 hover:bg-amber-50 rounded-xl font-semibold text-gray-700 text-sm">
+            <i data-lucide="pie-chart" class="w-4 h-4 text-amber-700"></i> Pastries</a>
+        <a href="#shop" onclick="toggleMenu(false); filterItems('Cupcake')" class="flex items-center gap-3 p-3 hover:bg-amber-50 rounded-xl font-semibold text-gray-700 text-sm">
+            <i data-lucide="heart" class="w-4 h-4 text-amber-700"></i> Cupcakes</a>
+        <a href="#shop" onclick="toggleMenu(false); filterItems('Luxury')" class="flex items-center gap-3 p-3 hover:bg-amber-50 rounded-xl font-semibold text-gray-700 text-sm">
+            <i data-lucide="award" class="w-4 h-4 text-amber-700"></i> Luxury Prestige</a>
+        <hr class="border-amber-50 my-2">
+        <a href="#policy" onclick="toggleMenu(false)" class="flex items-center gap-3 p-3 hover:bg-amber-50 rounded-xl font-semibold text-gray-700 text-sm">
+            <i data-lucide="shield-check" class="w-4 h-4 text-amber-700"></i> Return Policy</a>
+        <button onclick="toggleMenu(false); openModal('termsModal')" class="w-full flex items-center gap-3 p-3 hover:bg-amber-50 rounded-xl font-semibold text-gray-700 text-sm">
+            <i data-lucide="file-text" class="w-4 h-4 text-amber-700"></i> Terms &amp; Conditions</button>
+        <hr class="border-amber-50 my-2">
+        <button id="sideLoginBtn" onclick="toggleMenu(false); handleLoginBtnClick()" class="w-full flex items-center gap-3 p-3 hover:bg-amber-50 rounded-xl font-semibold text-gray-700 text-sm">
+            <i data-lucide="user-circle" class="w-4 h-4 text-amber-700"></i>
+            <span id="sideLoginLabel">Login / Register</span>
+        </button>
+    </div>
+    <div class="p-5 bg-amber-900 text-white text-xs">
+        <p class="font-bold opacity-70 mb-2 uppercase tracking-widest text-[10px]">Need Help?</p>
+        <p class="mb-1">📞 +91 9399564309</p>
+        <p>📧 <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="116164637f747f75637073707a74636851767c70787d3f727e7c">[email&#160;protected]</a></p>
+        <!-- Live shop status in sidebar -->
+        <div id="sidebarStatus" class="mt-3 text-xs font-bold"></div>
+    </div>
+</aside>
+
+<!-- ==========================================
+     HERO SLIDER
+========================================== -->
+<header class="mt-16 md:mt-20 relative h-[55vw] min-h-[260px] max-h-[600px] overflow-hidden bg-black">
+    <div class="hero-slide active">
+        <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=1600" class="w-full h-full object-cover opacity-55" loading="eager">
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-6 z-10">
+            <h2 class="heading-font text-4xl sm:text-6xl md:text-8xl font-bold mb-2 md:mb-4 drop-shadow-lg">Artisan Cakes</h2>
+            <p class="text-base md:text-2xl opacity-90 drop-shadow">Experience the gold standard of Purnendra Bakery.</p>
+        </div>
+    </div>
+    <div class="hero-slide">
+        <img src="https://images.unsplash.com/photo-1530103043960-ef38714abb15?w=1600" class="w-full h-full object-cover opacity-55">
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-6 z-10">
+            <h2 class="heading-font text-4xl sm:text-6xl md:text-8xl font-bold mb-2 md:mb-4 drop-shadow-lg">Party Decor</h2>
+            <p class="text-base md:text-2xl opacity-90 drop-shadow">Balloons, props, and everything for your celebration.</p>
+        </div>
+    </div>
+    <div class="hero-slide">
+        <img src="https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=1600" class="w-full h-full object-cover opacity-55">
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-6 z-10">
+            <h2 class="heading-font text-4xl sm:text-6xl md:text-8xl font-bold mb-2 md:mb-4 drop-shadow-lg">Sweet Bites</h2>
+            <p class="text-base md:text-2xl opacity-90 drop-shadow">Designer cupcakes and chocolate luxury boxes.</p>
+        </div>
+    </div>
+    <div class="hero-slide">
+        <img src="https://images.unsplash.com/photo-1513201099705-a9746e1e201f?w=1600" class="w-full h-full object-cover opacity-55">
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-6 z-10">
+            <h2 class="heading-font text-4xl sm:text-6xl md:text-8xl font-bold mb-2 md:mb-4 drop-shadow-lg">Memories</h2>
+            <p class="text-base md:text-2xl opacity-90 drop-shadow">Over 100+ designer Birthday and Anniversary cards.</p>
+        </div>
+    </div>
+    <div class="hero-dots absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+        <button onclick="goHeroSlide(0)" class="w-2.5 h-2.5 rounded-full bg-white/50 active"></button>
+        <button onclick="goHeroSlide(1)" class="w-2.5 h-2.5 rounded-full bg-white/50"></button>
+        <button onclick="goHeroSlide(2)" class="w-2.5 h-2.5 rounded-full bg-white/50"></button>
+        <button onclick="goHeroSlide(3)" class="w-2.5 h-2.5 rounded-full bg-white/50"></button>
+    </div>
+</header>
+
+<!-- ==========================================
+     QUALITY ASSURANCE STRIP
+========================================== -->
+<section class="bg-white border-b border-amber-50 py-4 px-4 overflow-hidden">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex gap-3 overflow-x-auto no-scrollbar pb-1">
+            <span class="quality-pill">⭐ FSSAI Certified Kitchen</span>
+            <span class="quality-pill">🧼 Hygienically Prepared Daily</span>
+            <span class="quality-pill">🥛 100% Fresh Dairy Ingredients</span>
+            <span class="quality-pill">🎨 Hand-Crafted With Love</span>
+            <span class="quality-pill">🚚 Same-Day Delivery Available</span>
+            <span class="quality-pill">🏆 Award-Winning Recipes Since 2010</span>
+            <span class="quality-pill">🌿 No Artificial Preservatives</span>
+            <span class="quality-pill">✅ Strict Cold-Chain Maintained</span>
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================
+     ICON CATEGORY BAR
+========================================== -->
+<section class="max-w-7xl mx-auto px-3 md:px-6 pt-6">
+    <div class="bg-white rounded-2xl md:rounded-[2rem] shadow-md border border-amber-50 px-4 py-4">
+        <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-400 mb-3">Browse by Category</p>
+        <div class="cat-icon-bar" id="catIconBar">
+            <button class="cat-icon-btn cat-active" data-cat="All" onclick="catIconFilter(this,'All')" aria-label="All Products">
+                <div class="cat-icon-circle">🏪</div>
+                <span class="cat-icon-label">All</span>
+            </button>
+            <button class="cat-icon-btn" data-cat="Cake" onclick="catIconFilter(this,'Cake')" aria-label="Cakes">
+                <div class="cat-icon-circle">🎂</div>
+                <span class="cat-icon-label">Cakes</span>
+            </button>
+            <button class="cat-icon-btn" data-cat="Chocolate" onclick="catIconFilter(this,'Chocolate')" aria-label="Chocolates">
+                <div class="cat-icon-circle">🍫</div>
+                <span class="cat-icon-label">Chocolates</span>
+            </button>
+            <button class="cat-icon-btn" data-cat="Pastry" onclick="catIconFilter(this,'Pastry')" aria-label="Pastries">
+                <div class="cat-icon-circle">🥐</div>
+                <span class="cat-icon-label">Pastries</span>
+            </button>
+            <button class="cat-icon-btn" data-cat="Cupcake" onclick="catIconFilter(this,'Cupcake')" aria-label="Cupcakes">
+                <div class="cat-icon-circle">🧁</div>
+                <span class="cat-icon-label">Cupcakes</span>
+            </button>
+            <button class="cat-icon-btn" data-cat="Luxury" onclick="catIconFilter(this,'Luxury')" aria-label="Luxury">
+                <div class="cat-icon-circle">👑</div>
+                <span class="cat-icon-label">Luxury</span>
+            </button>
+            <button class="cat-icon-btn" data-cat="Pastry" onclick="catIconFilter(this,'Pastry'); sortByPrice('low')" aria-label="Budget Picks">
+                <div class="cat-icon-circle">💰</div>
+                <span class="cat-icon-label">Budget</span>
+            </button>
+            <button class="cat-icon-btn" data-cat="All" onclick="catIconFilter(this,'All'); sortByPrice('high')" aria-label="Premium">
+                <div class="cat-icon-circle">✨</div>
+                <span class="cat-icon-label">Premium</span>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================
+     FILTER TOOLBAR
+========================================== -->
+<section id="shop" class="max-w-7xl mx-auto px-3 md:px-4 mt-6 relative z-50">
+    <div class="bg-white rounded-2xl md:rounded-[2.5rem] shadow-xl p-4 md:p-6 border border-amber-50">
+        <div class="flex items-center justify-between gap-3">
+            <div class="flex-1 flex gap-2 overflow-x-auto no-scrollbar">
+                <button onclick="filterItems('All')" class="filter-btn active px-4 py-2 rounded-xl font-bold text-xs whitespace-nowrap bg-amber-900 text-white" data-filter="All">All</button>
+                <button onclick="filterItems('Cake')" class="filter-btn px-4 py-2 rounded-xl font-bold text-xs whitespace-nowrap border border-amber-100 text-amber-900 hover:bg-amber-50" data-filter="Cake">🎂 Cakes</button>
+                <button onclick="filterItems('Chocolate')" class="filter-btn px-4 py-2 rounded-xl font-bold text-xs whitespace-nowrap border border-amber-100 text-amber-900 hover:bg-amber-50" data-filter="Chocolate">🍫 Chocolates</button>
+                <button onclick="filterItems('Pastry')" class="filter-btn px-4 py-2 rounded-xl font-bold text-xs whitespace-nowrap border border-amber-100 text-amber-900 hover:bg-amber-50" data-filter="Pastry">🥐 Pastries</button>
+                <button onclick="filterItems('Cupcake')" class="filter-btn px-4 py-2 rounded-xl font-bold text-xs whitespace-nowrap border border-amber-100 text-amber-900 hover:bg-amber-50" data-filter="Cupcake">🧁 Cupcakes</button>
+                <button onclick="filterItems('Luxury')" class="filter-btn px-4 py-2 rounded-xl font-bold text-xs whitespace-nowrap border border-amber-100 text-amber-900 hover:bg-amber-50" data-filter="Luxury">✨ Luxury</button>
+            </div>
+            <div class="flex gap-2 shrink-0">
+                <button onclick="sortByPrice('low')" class="p-2.5 bg-gray-50 rounded-xl hover:bg-amber-100 text-amber-900" title="Low to High">
+                    <i data-lucide="arrow-down-narrow-wide" class="w-4 h-4"></i>
+                </button>
+                <button onclick="sortByPrice('high')" class="p-2.5 bg-gray-50 rounded-xl hover:bg-amber-100 text-amber-900" title="High to Low">
+                    <i data-lucide="arrow-up-wide-narrow" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================
+     PRODUCT GRID
+========================================== -->
+<main class="max-w-7xl mx-auto px-3 md:px-4 pt-8 pb-16">
+    <div id="productGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
+
+        <!-- ====== ITEM: Truffle Cake | Unicode: 🎂🍫 | Code: CK-01 ====== -->
+        <div class="product-item product-card" data-price="999" data-cat="Cake" data-name="Truffle Chocolate Cake" data-id="CK-01" data-keywords="cake chocolate truffle ganache ck-01 c1">
+            <div class="gallery-wrap h-44 md:h-60 rounded-t-2xl" data-gallery-id="C1">
+                <div class="gallery-track" id="gallery-C1">
+                    <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600" alt="Truffle Cake" onclick="openZoom(this.src)">
+                    <img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=600" alt="Truffle Cake" onclick="openZoom(this.src)">
+                    <img src="https://images.unsplash.com/photo-1548907040-4baa42d10919?w=600" alt="Truffle Cake" onclick="openZoom(this.src)">
+                </div>
+                <button class="gallery-arrow left" onclick="slideGallery('C1',-1)"><i data-lucide="chevron-left" class="w-3 h-3"></i></button>
+                <button class="gallery-arrow right" onclick="slideGallery('C1',1)"><i data-lucide="chevron-right" class="w-3 h-3"></i></button>
+                <div class="gallery-dots" id="dots-C1">
+                    <span class="active" onclick="goGallery('C1',0)"></span>
+                    <span onclick="goGallery('C1',1)"></span>
+                    <span onclick="goGallery('C1',2)"></span>
+                </div>
+                <span class="absolute top-2 left-2 bg-amber-900/80 text-white text-[8px] font-bold px-2 py-0.5 rounded-full z-20">CK-01</span>
+                <span class="unicode-badge">🎂🍫</span>
+            </div>
+            <div class="p-3 md:p-4 flex-1 flex flex-col">
+                <h3 class="font-bold text-gray-800 text-xs md:text-sm mb-1 leading-snug">Truffle Chocolate Cake</h3>
+                <p class="text-[10px] text-gray-400 mb-1 line-clamp-2 italic">Rich dark chocolate with gooey ganache layers. Made fresh daily from Belgian couverture chocolate and pure dairy cream — a celebration in every slice.</p>
+                <div class="flex items-center flex-wrap gap-1.5 mb-3">
+                    <span class="text-base md:text-lg font-black gold-text">₹999</span>
+                    <span class="text-[10px] text-gray-400 line-through">₹1200</span>
+                    <span class="discount-badge" data-sale="999" data-mrp="1200"></span>
+                </div>
+                <div class="mt-auto grid grid-cols-1 gap-2">
+                    <button onclick="addToCart('C1','Truffle Chocolate Cake',999,'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600')"
+                        class="w-full py-2.5 bg-amber-50 text-amber-900 rounded-xl text-[10px] font-bold hover:bg-amber-100 transition-colors flex items-center justify-center gap-1">
+                        <i data-lucide="shopping-cart" class="w-3 h-3"></i> ADD TO CART
+                    </button>
+                    <button onclick="openPayModal('C1','Truffle Chocolate Cake',999,1200,'Rich dark chocolate with gooey ganache layers. Made fresh daily from Belgian couverture chocolate and pure dairy cream — a celebration in every slice.','https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600','🎂🍫')"
+                        class="w-full py-2.5 gold-bg text-white rounded-xl text-[10px] font-bold shadow-md hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-1">
+                        <i data-lucide="zap" class="w-3 h-3"></i> BUY NOW
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== ITEM: Belgian Chocolate Box | Unicode: 🍫🎁 | Code: CH-01 ====== -->
+        <div class="product-item product-card" data-price="499" data-cat="Chocolate" data-name="Belgian Gift Box" data-id="CH-01" data-keywords="chocolate belgian box gift bonbon truffle praline ch-01 ch1">
+            <div class="gallery-wrap h-44 md:h-60 rounded-t-2xl" data-gallery-id="CH1">
+                <div class="gallery-track" id="gallery-CH1">
+                    <img src="https://images.unsplash.com/photo-1548907040-4baa42d10919?w=600" alt="Belgian Box" onclick="openZoom(this.src)">
+                    <img src="https://images.unsplash.com/photo-1553480648-6e10eefd50ce?w=600" alt="Belgian Box 2" onclick="openZoom(this.src)">
+                </div>
+                <button class="gallery-arrow left" onclick="slideGallery('CH1',-1)"><i data-lucide="chevron-left" class="w-3 h-3"></i></button>
+                <button class="gallery-arrow right" onclick="slideGallery('CH1',1)"><i data-lucide="chevron-right" class="w-3 h-3"></i></button>
+                <div class="gallery-dots" id="dots-CH1">
+                    <span class="active" onclick="goGallery('CH1',0)"></span>
+                    <span onclick="goGallery('CH1',1)"></span>
+                </div>
+                <span class="absolute top-2 left-2 bg-amber-900/80 text-white text-[8px] font-bold px-2 py-0.5 rounded-full z-20">CH-01</span>
+                <span class="unicode-badge">🍫🎁</span>
+            </div>
+            <div class="p-3 md:p-4 flex-1 flex flex-col">
+                <h3 class="font-bold text-gray-800 text-xs md:text-sm mb-1 leading-snug">Belgian Gift Box</h3>
+                <p class="text-[10px] text-gray-400 mb-1 line-clamp-2 italic">Luxury assorted chocolates in a golden box. 16 handcrafted bonbons, truffles & pralines sourced from premium cocoa — perfect for gifting.</p>
+                <div class="flex items-center flex-wrap gap-1.5 mb-3">
+                    <span class="text-base md:text-lg font-black gold-text">₹499</span>
+                    <span class="text-[10px] text-gray-400 line-through">₹700</span>
+                    <span class="discount-badge" data-sale="499" data-mrp="700"></span>
+                </div>
+                <div class="mt-auto grid grid-cols-1 gap-2">
+                    <button onclick="addToCart('CH1','Belgian Gift Box',499,'https://images.unsplash.com/photo-1548907040-4baa42d10919?w=600')"
+                        class="w-full py-2.5 bg-amber-50 text-amber-900 rounded-xl text-[10px] font-bold hover:bg-amber-100 transition-colors flex items-center justify-center gap-1">
+                        <i data-lucide="shopping-cart" class="w-3 h-3"></i> ADD TO CART
+                    </button>
+                    <button onclick="openPayModal('CH1','Belgian Gift Box',499,700,'Luxury assorted chocolates in a golden box. 16 handcrafted bonbons, truffles & pralines sourced from premium cocoa — perfect for gifting.','https://images.unsplash.com/photo-1548907040-4baa42d10919?w=600','🍫🎁')"
+                        class="w-full py-2.5 gold-bg text-white rounded-xl text-[10px] font-bold shadow-md hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-1">
+                        <i data-lucide="zap" class="w-3 h-3"></i> BUY NOW
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== ITEM: Pineapple Pastry | Unicode: 🥐🍍 | Code: PS-01 ====== -->
+        <div class="product-item product-card" data-price="120" data-cat="Pastry" data-name="Pineapple Bliss Pastry" data-id="PS-01" data-keywords="pastry pineapple bliss cream fresh ps-01 ps1">
+            <div class="gallery-wrap h-44 md:h-60 rounded-t-2xl" data-gallery-id="PS1">
+                <div class="gallery-track" id="gallery-PS1">
+                    <img src="https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=600" alt="Pineapple Pastry" onclick="openZoom(this.src)">
+                    <img src="https://images.unsplash.com/photo-1586788680434-30d324b2d46f?w=600" alt="Pineapple Pastry 2" onclick="openZoom(this.src)">
+                </div>
+                <button class="gallery-arrow left" onclick="slideGallery('PS1',-1)"><i data-lucide="chevron-left" class="w-3 h-3"></i></button>
+                <button class="gallery-arrow right" onclick="slideGallery('PS1',1)"><i data-lucide="chevron-right" class="w-3 h-3"></i></button>
+                <div class="gallery-dots" id="dots-PS1">
+                    <span class="active" onclick="goGallery('PS1',0)"></span>
+                    <span onclick="goGallery('PS1',1)"></span>
+                </div>
+                <span class="absolute top-2 left-2 bg-amber-900/80 text-white text-[8px] font-bold px-2 py-0.5 rounded-full z-20">PS-01</span>
+                <span class="unicode-badge">🥐🍍</span>
+            </div>
+            <div class="p-3 md:p-4 flex-1 flex flex-col">
+                <h3 class="font-bold text-gray-800 text-xs md:text-sm mb-1 leading-snug">Pineapple Bliss</h3>
+                <p class="text-[10px] text-gray-400 mb-1 line-clamp-2 italic">Light and airy with fresh pineapple chunks. Layered with silky chantilly cream and real fruit — baked fresh every morning, never frozen.</p>
+                <div class="flex items-center flex-wrap gap-1.5 mb-3">
+                    <span class="text-base md:text-lg font-black gold-text">₹120</span>
+                    <span class="text-[10px] text-gray-400 line-through">₹180</span>
+                    <span class="discount-badge" data-sale="120" data-mrp="180"></span>
+                </div>
+                <div class="mt-auto grid grid-cols-1 gap-2">
+                    <button onclick="addToCart('PS1','Pineapple Bliss',120,'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=600')"
+                        class="w-full py-2.5 bg-amber-50 text-amber-900 rounded-xl text-[10px] font-bold hover:bg-amber-100 transition-colors flex items-center justify-center gap-1">
+                        <i data-lucide="shopping-cart" class="w-3 h-3"></i> ADD TO CART
+                    </button>
+                    <button onclick="openPayModal('PS1','Pineapple Bliss',120,180,'Light and airy with fresh pineapple chunks. Layered with silky chantilly cream and real fruit — baked fresh every morning, never frozen.','https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=600','🥐🍍')"
+                        class="w-full py-2.5 gold-bg text-white rounded-xl text-[10px] font-bold shadow-md hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-1">
+                        <i data-lucide="zap" class="w-3 h-3"></i> BUY NOW
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== ITEM: Vanilla Cupcake | Unicode: 🧁🍦 | Code: CP-01 ====== -->
+        <div class="product-item product-card" data-price="60" data-cat="Cupcake" data-name="Vanilla Swirl Cupcake" data-id="CP-01" data-keywords="cupcake vanilla swirl buttercream frosting cp-01 cp1">
+            <div class="gallery-wrap h-44 md:h-60 rounded-t-2xl" data-gallery-id="CP1">
+                <div class="gallery-track" id="gallery-CP1">
+                    <img src="https://images.unsplash.com/photo-1557308535-44a140041119?w=600" alt="Vanilla Cupcake" onclick="openZoom(this.src)">
+                    <img src="https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=600" alt="Vanilla Cupcake 2" onclick="openZoom(this.src)">
+                </div>
+                <button class="gallery-arrow left" onclick="slideGallery('CP1',-1)"><i data-lucide="chevron-left" class="w-3 h-3"></i></button>
+                <button class="gallery-arrow right" onclick="slideGallery('CP1',1)"><i data-lucide="chevron-right" class="w-3 h-3"></i></button>
+                <div class="gallery-dots" id="dots-CP1">
+                    <span class="active" onclick="goGallery('CP1',0)"></span>
+                    <span onclick="goGallery('CP1',1)"></span>
+                </div>
+                <span class="absolute top-2 left-2 bg-amber-900/80 text-white text-[8px] font-bold px-2 py-0.5 rounded-full z-20">CP-01</span>
+                <span class="unicode-badge">🧁🍦</span>
+            </div>
+            <div class="p-3 md:p-4 flex-1 flex flex-col">
+                <h3 class="font-bold text-gray-800 text-xs md:text-sm mb-1 leading-snug">Vanilla Swirl</h3>
+                <p class="text-[10px] text-gray-400 mb-1 line-clamp-2 italic">Classic vanilla with creamy buttercream frosting. Made with Madagascar vanilla bean and slow-whipped European butter for an unforgettable swirl.</p>
+                <div class="flex items-center flex-wrap gap-1.5 mb-3">
+                    <span class="text-base md:text-lg font-black gold-text">₹60</span>
+                    <span class="text-[10px] text-gray-400 line-through">₹100</span>
+                    <span class="discount-badge" data-sale="60" data-mrp="100"></span>
+                </div>
+                <div class="mt-auto grid grid-cols-1 gap-2">
+                    <button onclick="addToCart('CP1','Vanilla Swirl',60,'https://images.unsplash.com/photo-1557308535-44a140041119?w=600')"
+                        class="w-full py-2.5 bg-amber-50 text-amber-900 rounded-xl text-[10px] font-bold hover:bg-amber-100 transition-colors flex items-center justify-center gap-1">
+                        <i data-lucide="shopping-cart" class="w-3 h-3"></i> ADD TO CART
+                    </button>
+                    <button onclick="openPayModal('CP1','Vanilla Swirl',60,100,'Classic vanilla with creamy buttercream frosting. Made with Madagascar vanilla bean and slow-whipped European butter for an unforgettable swirl.','https://images.unsplash.com/photo-1557308535-44a140041119?w=600','🧁🍦')"
+                        class="w-full py-2.5 gold-bg text-white rounded-xl text-[10px] font-bold shadow-md hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-1">
+                        <i data-lucide="zap" class="w-3 h-3"></i> BUY NOW
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== ITEM: 24K Gold Prestige | Unicode: 👑✨ | Code: PR-01 ====== -->
+        <div class="product-item product-card" data-price="2500" data-cat="Luxury" data-name="24K Gold Prestige Cake" data-id="PR-01" data-keywords="luxury gold prestige 24k velvet premium pr-01 pr1">
+            <div class="gallery-wrap h-44 md:h-60 rounded-t-2xl" data-gallery-id="PR1">
+                <div class="gallery-track" id="gallery-PR1">
+                    <img src="https://images.unsplash.com/photo-1519340333755-56e9c1d04579?w=600" alt="Gold Prestige" onclick="openZoom(this.src)">
+                    <img src="https://images.unsplash.com/photo-1535141192574-5f0dfb3a4dc3?w=600" alt="Gold Prestige 2" onclick="openZoom(this.src)">
+                    <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600" alt="Gold Prestige 3" onclick="openZoom(this.src)">
+                </div>
+                <button class="gallery-arrow left" onclick="slideGallery('PR1',-1)"><i data-lucide="chevron-left" class="w-3 h-3"></i></button>
+                <button class="gallery-arrow right" onclick="slideGallery('PR1',1)"><i data-lucide="chevron-right" class="w-3 h-3"></i></button>
+                <div class="gallery-dots" id="dots-PR1">
+                    <span class="active" onclick="goGallery('PR1',0)"></span>
+                    <span onclick="goGallery('PR1',1)"></span>
+                    <span onclick="goGallery('PR1',2)"></span>
+                </div>
+                <span class="absolute top-2 left-2 bg-amber-900/80 text-white text-[8px] font-bold px-2 py-0.5 rounded-full z-20">PR-01</span>
+                <span class="absolute top-2 right-2 gold-bg text-white text-[8px] font-bold px-2 py-0.5 rounded-full z-20">✨ LUXURY</span>
+                <span class="unicode-badge">👑✨</span>
+            </div>
+            <div class="p-3 md:p-4 flex-1 flex flex-col">
+                <h3 class="font-bold text-gray-800 text-xs md:text-sm mb-1 leading-snug">24K Gold Prestige</h3>
+                <p class="text-[10px] text-gray-400 mb-1 line-clamp-2 italic">Decorated with genuine edible 24K gold leaves. Our most prestigious creation — multi-tiered velvet sponge, hand-gilded with real gold foil for life's grandest moments.</p>
+                <div class="flex items-center flex-wrap gap-1.5 mb-3">
+                    <span class="text-base md:text-lg font-black gold-text">₹2500</span>
+                    <span class="text-[10px] text-gray-400 line-through">₹3500</span>
+                    <span class="discount-badge" data-sale="2500" data-mrp="3500"></span>
+                </div>
+                <div class="mt-auto grid grid-cols-1 gap-2">
+                    <button onclick="addToCart('PR1','24K Gold Prestige',2500,'https://images.unsplash.com/photo-1519340333755-56e9c1d04579?w=600')"
+                        class="w-full py-2.5 bg-amber-50 text-amber-900 rounded-xl text-[10px] font-bold hover:bg-amber-100 transition-colors flex items-center justify-center gap-1">
+                        <i data-lucide="shopping-cart" class="w-3 h-3"></i> ADD TO CART
+                    </button>
+                    <button onclick="openPayModal('PR1','24K Gold Prestige',2500,3500,'Decorated with genuine edible 24K gold leaves. Our most prestigious creation — multi-tiered velvet sponge, hand-gilded with real gold foil for life\'s grandest moments.','https://images.unsplash.com/photo-1519340333755-56e9c1d04579?w=600','👑✨')"
+                        class="w-full py-2.5 gold-bg text-white rounded-xl text-[10px] font-bold shadow-md hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-1">
+                        <i data-lucide="zap" class="w-3 h-3"></i> BUY NOW
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- ==========================================
+     MARQUEE / GALLERY STRIP
+========================================== -->
+<section class="py-10 bg-white border-y border-amber-50 overflow-hidden">
+    <h2 class="heading-font text-2xl md:text-3xl gold-text text-center mb-8 italic">Our Special Creations</h2>
+    <div class="overflow-hidden">
+        <div class="marquee-inner gap-4">
+            <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300" class="h-32 md:h-40 rounded-2xl shadow-lg shrink-0 object-cover w-48 md:w-64" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=300" class="h-32 md:h-40 rounded-2xl shadow-lg shrink-0 object-cover w-48 md:w-64" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1530103043960-ef38714abb15?w=300" class="h-32 md:h-40 rounded-2xl shadow-lg shrink-0 object-cover w-48 md:w-64" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1513201099705-a9746e1e201f?w=300" class="h-32 md:h-40 rounded-2xl shadow-lg shrink-0 object-cover w-48 md:w-64" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1557308535-44a140041119?w=300" class="h-32 md:h-40 rounded-2xl shadow-lg shrink-0 object-cover w-48 md:w-64" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1586788680434-30d324b2d46f?w=300" class="h-32 md:h-40 rounded-2xl shadow-lg shrink-0 object-cover w-48 md:w-64" loading="lazy">
+            <!-- Duplicate for seamless loop -->
+            <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300" class="h-32 md:h-40 rounded-2xl shadow-lg shrink-0 object-cover w-48 md:w-64" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=300" class="h-32 md:h-40 rounded-2xl shadow-lg shrink-0 object-cover w-48 md:w-64" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1530103043960-ef38714abb15?w=300" class="h-32 md:h-40 rounded-2xl shadow-lg shrink-0 object-cover w-48 md:w-64" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1513201099705-a9746e1e201f?w=300" class="h-32 md:h-40 rounded-2xl shadow-lg shrink-0 object-cover w-48 md:w-64" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1557308535-44a140041119?w=300" class="h-32 md:h-40 rounded-2xl shadow-lg shrink-0 object-cover w-48 md:w-64" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1586788680434-30d324b2d46f?w=300" class="h-32 md:h-40 rounded-2xl shadow-lg shrink-0 object-cover w-48 md:w-64" loading="lazy">
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================
+     QUALITY PROMISE SECTION
+========================================== -->
+<section class="py-16 px-4 bg-gradient-to-br from-amber-950 to-amber-900 text-white">
+    <div class="max-w-5xl mx-auto text-center">
+        <p class="text-amber-400 font-bold uppercase tracking-[0.4em] text-xs mb-3">Why Choose Us</p>
+        <h2 class="heading-font text-3xl md:text-5xl font-bold italic mb-4">Crafted With Uncompromising Quality</h2>
+        <p class="text-amber-200/80 text-sm md:text-base max-w-2xl mx-auto mb-12 leading-relaxed">
+            At Purnendra Bakery, quality is not a department — it is our entire identity. Every item that leaves our kitchen has been prepared with the finest sourced ingredients, strict hygiene protocols, and decades of baking mastery. We believe that when food is made with love and the best ingredients, it speaks for itself.
+        </p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-5">
+            <div class="bg-white/10 rounded-2xl p-5 text-center">
+                <div class="text-4xl mb-3">🥛</div>
+                <h3 class="font-bold text-amber-300 text-sm mb-1">Farm-Fresh Dairy</h3>
+                <p class="text-amber-200/70 text-[11px] leading-relaxed">Direct from trusted farms. No UHT, no compromise.</p>
+            </div>
+            <div class="bg-white/10 rounded-2xl p-5 text-center">
+                <div class="text-4xl mb-3">🍫</div>
+                <h3 class="font-bold text-amber-300 text-sm mb-1">Belgian Couverture</h3>
+                <p class="text-amber-200/70 text-[11px] leading-relaxed">Premium single-origin cocoa for every chocolate item.</p>
+            </div>
+            <div class="bg-white/10 rounded-2xl p-5 text-center">
+                <div class="text-4xl mb-3">👨‍🍳</div>
+                <h3 class="font-bold text-amber-300 text-sm mb-1">Expert Artisans</h3>
+                <p class="text-amber-200/70 text-[11px] leading-relaxed">Our bakers have over 10 years of hands-on experience.</p>
+            </div>
+            <div class="bg-white/10 rounded-2xl p-5 text-center">
+                <div class="text-4xl mb-3">🌡️</div>
+                <h3 class="font-bold text-amber-300 text-sm mb-1">Cold-Chain Assured</h3>
+                <p class="text-amber-200/70 text-[11px] leading-relaxed">Temperature-controlled delivery, start to finish.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==========================================
+     RETURN POLICY
+========================================== -->
+<section id="policy" class="bg-white py-16 px-4 border-t border-amber-50">
+    <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-12">
+            <p class="text-amber-600 font-bold uppercase tracking-[0.4em] text-xs mb-3">Our Commitment</p>
+            <h2 class="heading-font text-3xl md:text-5xl font-bold gold-text italic mb-4">The Purnendra Promise</h2>
+            <div class="h-1 w-24 gold-bg mx-auto rounded-full mb-6"></div>
+            <p class="text-gray-500 text-sm max-w-xl mx-auto">We stand firmly behind every product we create. Your satisfaction is our reputation.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="policy-card bg-rose-50 border-rose-100 text-center">
+                <div class="w-14 h-14 bg-rose-500 text-white rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg"><i data-lucide="refresh-ccw" class="w-7 h-7"></i></div>
+                <h3 class="text-xl font-bold text-rose-900 mb-3">2-Hour Quality Guarantee</h3>
+                <p class="text-rose-700/80 leading-relaxed text-sm">If your cake or dessert does not meet the quality you were shown — wrong decoration, collapsed sponge, incorrect flavour — report it within 2 hours of delivery for a <strong>full refund or immediate replacement</strong> at zero extra charge.</p>
+            </div>
+            <div class="policy-card bg-amber-50 border-amber-100 text-center">
+                <div class="w-14 h-14 bg-amber-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg"><i data-lucide="package" class="w-7 h-7"></i></div>
+                <h3 class="text-xl font-bold text-amber-900 mb-3">24-Hour Returns on Props</h3>
+                <p class="text-amber-700/80 leading-relaxed text-sm">Balloons, party cards, candles and decorative items in their <strong>original gold-sealed packaging</strong> can be returned within 24 hours for a full refund. Items damaged during transit are replaced immediately — no questions asked.</p>
+            </div>
+            <div class="policy-card bg-green-50 border-green-100 text-center">
+                <div class="w-14 h-14 bg-green-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg"><i data-lucide="shield-check" class="w-7 h-7"></i></div>
+                <h3 class="text-xl font-bold text-green-900 mb-3">Pure Quality, Always</h3>
+                <p class="text-green-700/80 leading-relaxed text-sm">Every batch is quality-checked by our in-house team before dispatch. We use only FSSAI-approved ingredients. If any product causes a concern related to freshness or safety, we take <strong>100% responsibility</strong>.</p>
+            </div>
+        </div>
+        <!-- Detailed Policy Text -->
+        <div class="bg-gray-50 rounded-[2rem] p-6 md:p-8 border border-gray-100 text-sm text-gray-600 leading-relaxed space-y-4">
+            <h3 class="font-bold text-gray-800 text-base">Detailed Return & Refund Policy</h3>
+            <p><strong>Eligibility:</strong> Returns apply to items damaged in transit, incorrect orders, or quality-not-as-described. Perishable food items (cakes, pastries) must be reported within 2 hours. Non-perishable party accessories must be returned within 24 hours in original packaging.</p>
+            <p><strong>Non-returnable items:</strong> Custom-designed or personalised cakes cannot be returned once preparation has begun. Any items that have been partially consumed are ineligible for refunds.</p>
+            <p><strong>Refund process:</strong> Approved refunds are processed via the original payment method or as WhatsApp-confirmed store credit within 24–48 hours.</p>
+            <p><strong>How to initiate:</strong> WhatsApp us at +91 9399564309 with a photo of the issue and your order details. Our team responds within 30 minutes during business hours.</p>
+        </div>
+        <p class="text-center mt-6">
+            <button onclick="openModal('termsModal')" class="inline-flex items-center gap-2 text-amber-700 font-bold text-sm hover:text-amber-900 transition-colors underline underline-offset-4">
+                <i data-lucide="file-text" class="w-4 h-4"></i> View Full Terms &amp; Conditions
+            </button>
+        </p>
+    </div>
+</section>
+
+<!-- ==========================================
+     FOOTER
+========================================== -->
+<footer class="bg-gray-950 text-white pt-16 pb-10 px-6">
+    <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
+        <div class="col-span-2 md:col-span-1">
+            <h2 class="heading-font text-3xl gold-text italic mb-4">Purnendra</h2>
+            <p class="text-gray-500 text-sm leading-relaxed mb-6">Premium bakery and party hub since 2010. Pure quality, sweet memories.</p>
+            <div class="flex gap-3">
+                <a href="https://wa.me/919399564309" class="w-9 h-9 border border-gray-800 rounded-xl flex items-center justify-center hover:bg-green-600 transition-colors">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                </a>
+                <a href="#" class="w-9 h-9 border border-gray-800 rounded-xl flex items-center justify-center hover:bg-amber-600 transition-colors"><i data-lucide="instagram" class="w-4 h-4"></i></a>
+                <a href="tel:9399564309" class="w-9 h-9 border border-gray-800 rounded-xl flex items-center justify-center hover:bg-amber-600 transition-colors"><i data-lucide="phone" class="w-4 h-4"></i></a>
+            </div>
+        </div>
+        <div>
+            <h4 class="text-amber-500 font-bold uppercase tracking-widest text-xs mb-6">Store Hours</h4>
+            <ul class="text-gray-400 text-sm space-y-3">
+                <li class="flex justify-between border-b border-gray-900 pb-2"><span>Mon – Sat</span><span>9AM–10PM</span></li>
+                <li class="flex justify-between border-b border-gray-900 pb-2 text-amber-500"><span>Sunday</span><span>10AM–11PM</span></li>
+                <li id="footerStatus" class="flex items-center gap-2 text-xs mt-1 font-bold"></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="text-amber-500 font-bold uppercase tracking-widest text-xs mb-6">Quick Menu</h4>
+            <ul class="text-gray-400 text-sm space-y-3">
+                <li><a href="#shop" class="hover:text-white">Signature Cakes</a></li>
+                <li><a href="#shop" class="hover:text-white">Pastry Delights</a></li>
+                <li><a href="#shop" class="hover:text-white">Party Decorations</a></li>
+                <li><a href="#policy" class="hover:text-white">Return Policy</a></li>
+                <li><button onclick="openModal('termsModal')" class="hover:text-white text-left">Terms &amp; Conditions</button></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="text-amber-500 font-bold uppercase tracking-widest text-xs mb-6">Find Us</h4>
+            <ul class="text-gray-400 text-sm space-y-4">
+                <li class="flex gap-3"><i data-lucide="map-pin" class="text-amber-600 shrink-0 w-4 h-4 mt-0.5"></i><span>Shop No. 4, Civil Road, New Delhi, 110001</span></li>
+                <li class="flex gap-3"><i data-lucide="phone-call" class="text-amber-600 shrink-0 w-4 h-4"></i><span>+91 9399564309</span></li>
+            </ul>
+        </div>
+    </div>
+    <div class="border-t border-gray-900 pt-8 flex flex-col md:flex-row items-center justify-between gap-3">
+        <p class="text-[10px] text-gray-700 tracking-[0.5em] uppercase">© 2025 Purnendra Bakery &amp; Party Hub. All Rights Reserved.</p>
+        <div class="flex gap-4 text-[11px] text-gray-600">
+            <button onclick="openModal('termsModal')" class="hover:text-gray-400 transition-colors">Terms &amp; Conditions</button>
+            <span>|</span>
+            <a href="#policy" class="hover:text-gray-400 transition-colors">Return Policy</a>
+        </div>
+    </div>
+</footer>
+
+<!-- ==========================================
+     CART DRAWER
+========================================== -->
+<div id="cartOverlay" class="fixed inset-0 bg-black/60 z-[250] hidden opacity-0" onclick="toggleCart(false)"></div>
+<div id="cartDrawer" class="fixed right-0 top-0 h-full w-full max-w-sm bg-white z-[300] shadow-2xl flex flex-col translate-x-[100%]">
+    <div class="p-6 border-b flex justify-between items-center bg-amber-50/50">
+        <div>
+            <h2 class="heading-font text-2xl font-bold text-amber-900">🛒 Your Cart</h2>
+            <div id="cartUserBadge" class="mt-1"></div>
+        </div>
+        <button onclick="toggleCart(false)" class="p-2 text-rose-400 hover:bg-rose-50 rounded-full"><i data-lucide="x"></i></button>
+    </div>
+    <div id="cartItems" class="flex-1 overflow-y-auto p-5 space-y-3"></div>
+    <div class="p-5 border-t bg-gray-50 space-y-3">
+        <div class="flex justify-between items-center text-2xl font-black px-1">
+            <span>Total</span><span id="cartTotal" class="gold-text">₹0</span>
+        </div>
+        <!-- WhatsApp Order Button (moved up, most prominent) -->
+        <button onclick="openCartPayment()" class="w-full text-white py-4 rounded-2xl font-extrabold text-base shadow-2xl flex items-center justify-center gap-2.5 active:scale-95 transition-all"
+            style="background:linear-gradient(135deg,#25d366 0%,#128c7e 100%);box-shadow:0 6px 24px rgba(37,211,102,0.38),0 2px 8px rgba(0,0,0,0.10);letter-spacing:0.02em;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+            Order on WhatsApp
+        </button>
+        <!-- UPI Pay Button -->
+        <button onclick="openCartUPI()" class="w-full gold-bg text-white py-3.5 rounded-2xl font-bold text-sm shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all hover:opacity-90">
+            <i data-lucide="credit-card" class="w-4 h-4"></i>
+            Pay via UPI / Card
+        </button>
+    </div>
+</div>
+
+<!-- ZOOM OVERLAY -->
+<div id="zoomOverlay" class="fixed inset-0 flex items-center justify-center p-4" onclick="this.style.display='none'">
+    <img id="zoomImg" src="" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl">
+    <button class="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg" onclick="document.getElementById('zoomOverlay').style.display='none'">
+        <i data-lucide="x" class="w-5 h-5 text-gray-700"></i>
+    </button>
+</div>
+
+<!-- ==========================================
+     LOGIN / REGISTER MODAL
+========================================== -->
+<div id="loginModal" class="modal-overlay" onclick="if(event.target===this)closeModal('loginModal')">
+    <div class="modal-box" style="max-width:400px;">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <h2 style="margin-bottom:2px;">My Account</h2>
+                <p class="text-xs text-gray-400">Secure login with password. Ordering works as guest too!</p>
+            </div>
+            <button onclick="closeModal('loginModal')" class="p-2 text-gray-400 hover:bg-gray-100 rounded-full shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+
+        <!-- Tab switcher -->
+        <div id="loginTabs" class="flex gap-2 bg-amber-50 rounded-2xl p-1 mb-5">
+            <button class="login-tab active flex-1 text-center" onclick="switchLoginTab('login')">Login</button>
+            <button class="login-tab flex-1 text-center" onclick="switchLoginTab('register')">Register</button>
+            <button class="login-tab flex-1 text-center" onclick="switchLoginTab('guest')">Guest</button>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <div id="loginForm">
+            <div class="space-y-3 mb-2">
+                <div class="relative">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-base">📱</span>
+                    <input type="text" id="loginPhone" class="login-input" style="padding-left:42px;" placeholder="Mobile Number or User ID" maxlength="20" inputmode="tel" onkeydown="if(event.key==='Enter')document.getElementById('loginPass').focus()">
+                </div>
+                <div class="relative">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-base">🔒</span>
+                    <input type="password" id="loginPass" class="login-input" style="padding-left:42px;padding-right:42px;" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+                    <button type="button" onclick="togglePwdVis('loginPass','eyeLogin')" class="absolute right-3 top-1/2 -translate-y-1/2 text-amber-600 p-1">
+                        <i data-lucide="eye" id="eyeLogin" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="loginErr" class="text-xs text-red-500 mb-3 mt-2 hidden rounded-xl bg-red-50 border border-red-100 px-3 py-2"></div>
+            <button class="login-btn gold-bg text-white mt-3" onclick="doLogin()">✓ Login to My Account</button>
+            <p class="text-center text-[10px] text-gray-400 mt-3">Don't have an account? <button onclick="switchLoginTab('register')" class="text-amber-700 font-bold underline bg-none border-none cursor-pointer">Register here</button></p>
+        </div>
+
+        <!-- REGISTER FORM -->
+        <div id="registerForm" style="display:none;">
+            <div class="space-y-3 mb-2">
+                <div class="relative">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-base">👤</span>
+                    <input type="text" id="regName" class="login-input" style="padding-left:42px;" placeholder="Full Name" onkeydown="if(event.key==='Enter')document.getElementById('regPhone').focus()">
+                </div>
+                <div class="relative">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-base">📱</span>
+                    <input type="text" id="regPhone" class="login-input" style="padding-left:42px;" placeholder="Mobile Number (becomes your User ID)" maxlength="15" inputmode="tel" onkeydown="if(event.key==='Enter')document.getElementById('regEmail').focus()">
+                </div>
+                <div class="relative">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-base">📧</span>
+                    <input type="email" id="regEmail" class="login-input" style="padding-left:42px;" placeholder="Email (optional)" onkeydown="if(event.key==='Enter')document.getElementById('regPass').focus()">
+                </div>
+                <div class="relative">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-base">🔒</span>
+                    <input type="password" id="regPass" class="login-input" style="padding-left:42px;padding-right:42px;" placeholder="Create Password (min 6 chars)" onkeydown="if(event.key==='Enter')document.getElementById('regPass2').focus()">
+                    <button type="button" onclick="togglePwdVis('regPass','eyeReg1')" class="absolute right-3 top-1/2 -translate-y-1/2 text-amber-600 p-1">
+                        <i data-lucide="eye" id="eyeReg1" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <div class="relative">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-base">🔑</span>
+                    <input type="password" id="regPass2" class="login-input" style="padding-left:42px;padding-right:42px;" placeholder="Confirm Password" onkeydown="if(event.key==='Enter')doRegister()">
+                    <button type="button" onclick="togglePwdVis('regPass2','eyeReg2')" class="absolute right-3 top-1/2 -translate-y-1/2 text-amber-600 p-1">
+                        <i data-lucide="eye" id="eyeReg2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="registerErr" class="text-xs text-red-500 mb-2 mt-2 hidden rounded-xl bg-red-50 border border-red-100 px-3 py-2"></div>
+            <button class="login-btn gold-bg text-white mt-3" onclick="doRegister()">🎉 Create Account</button>
+            <p class="text-center text-[10px] text-gray-400 mt-3">Already have an account? <button onclick="switchLoginTab('login')" class="text-amber-700 font-bold underline bg-none border-none cursor-pointer">Login here</button></p>
+        </div>
+
+        <!-- GUEST FORM -->
+        <div id="guestForm" style="display:none;">
+            <div class="bg-green-50 border border-green-100 rounded-2xl p-4 mb-4">
+                <p class="text-sm font-bold text-green-800 mb-1">✅ Continue as Guest</p>
+                <p class="text-xs text-green-700 leading-relaxed">No problem! Simply browse and tap <strong>BUY NOW</strong> — your order goes straight to WhatsApp. Fast &amp; easy.</p>
+            </div>
+            <button class="login-btn" style="background:#f59e0b;color:white;" onclick="continueAsGuest()">🛒 Continue as Guest</button>
+        </div>
+
+        <!-- LOGGED IN STATE -->
+        <div id="loggedInPanel" style="display:none;">
+            <div class="bg-gradient-to-br from-green-50 to-amber-50 border border-green-100 rounded-2xl p-5 mb-4 text-center">
+                <div id="loggedInAvatar" class="w-16 h-16 rounded-full gold-bg text-white text-2xl font-black flex items-center justify-center mx-auto mb-3 shadow-lg"></div>
+                <p class="font-bold text-gray-800 text-sm" id="loggedInName"></p>
+                <p class="text-xs text-gray-500 mt-0.5" id="loggedInPhone"></p>
+                <p class="text-[10px] text-green-600 font-bold mt-1" id="loggedInEmail"></p>
+            </div>
+            <button class="login-btn mb-2" style="background:#f59e0b;color:white;" onclick="closeModal('loginModal')">✓ Continue Shopping</button>
+            <button class="login-btn" style="background:#fee2e2;color:#dc2626;" onclick="doLogout()">🚪 Logout</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================
+     UPI PAYMENT MODAL
+========================================== -->
+<div id="payModal" class="modal-overlay" onclick="if(event.target===this)closeModal('payModal')">
+    <div class="modal-box" style="max-width:420px;">
+
+        <!-- Header -->
+        <div class="flex justify-between items-start mb-5">
+            <div>
+                <h2 style="margin-bottom:2px;">Choose Payment</h2>
+                <p id="payOrderSummary" class="text-xs text-gray-400 font-medium"></p>
+            </div>
+            <button onclick="closeModal('payModal')" class="p-2 text-gray-400 hover:bg-gray-100 rounded-full shrink-0 mt-1"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+
+        <!-- Amount chip -->
+        <div class="flex items-center justify-between bg-amber-50 border border-amber-100 rounded-2xl px-4 py-3 mb-5">
+            <div class="flex items-center gap-2">
+                <i data-lucide="receipt-text" class="w-4 h-4 text-amber-700"></i>
+                <span class="text-xs font-bold text-amber-800">Order Amount</span>
+            </div>
+            <span id="payAmountDisplay" class="text-xl font-black gold-text">₹0</span>
+        </div>
+
+        <!-- Payment method selector -->
+        <p class="text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-3">Select Method</p>
+        <div class="space-y-3 mb-5">
+
+            <!-- UPI Option -->
+            <button class="pay-method-btn" id="btnUPI" onclick="selectPayMethod('upi')">
+                <span class="pay-icon">📲</span>
+                <div class="flex-1">
+                    <div class="pay-label">Pay via UPI App</div>
+                    <div class="pay-sub">GPay · PhonePe · Paytm — Opens Instantly</div>
+                </div>
+                <span class="text-[10px] font-bold bg-green-100 text-green-700 px-2.5 py-1 rounded-full whitespace-nowrap">⚡ Instant</span>
+            </button>
+
+            <!-- WhatsApp + Pay later option -->
+            <button class="pay-method-btn" id="btnWA" onclick="selectPayMethod('wa')">
+                <span class="pay-icon">💬</span>
+                <div>
+                    <div class="pay-label">Order on WhatsApp</div>
+                    <div class="pay-sub">Pay later · Cash on Delivery · COD</div>
+                </div>
+            </button>
+        </div>
+
+        <!-- ===== UPI SECTION ===== -->
+        <div id="upiSection">
+            <div class="qr-box mb-4">
+                <!-- QR Code (Google Charts API — replace UPI ID in the URL below) -->
+                <img id="upiQrImg"
+                     src=""
+                     alt="UPI QR Code"
+                     class="w-44 h-44 rounded-xl">
+                <p class="text-[10px] text-gray-400 font-semibold">Scan with any UPI app</p>
+            </div>
+
+            <!-- UPI ID Copy row -->
+            <div class="mb-4">
+                <p class="text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-2">Or enter UPI ID manually</p>
+                <div class="upi-id-pill" onclick="copyUPI(this)">
+                    <span id="upiIdText">9399564309@ybl</span>
+                    <i data-lucide="copy" class="w-4 h-4 text-amber-700 shrink-0"></i>
+                    <span id="copiedTag" class="hidden text-[10px] font-bold text-green-600 shrink-0">✓ Copied!</span>
+                </div>
+            </div>
+
+            <!-- Steps -->
+            <div class="bg-amber-50 rounded-2xl p-4 mb-4 space-y-2">
+                <p class="text-[11px] font-bold uppercase tracking-widest text-amber-800 mb-3">How to Pay</p>
+                <div class="flex items-start gap-3">
+                    <span class="step-badge">1</span>
+                    <p class="text-xs text-gray-600 leading-relaxed">Open Google Pay, PhonePe, Paytm or any UPI app on your phone.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="step-badge">2</span>
+                    <p class="text-xs text-gray-600 leading-relaxed">Scan the QR above <em>or</em> enter the UPI ID manually.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="step-badge">3</span>
+                    <p class="text-xs text-gray-600 leading-relaxed">Enter the exact amount shown and complete the payment.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="step-badge">4</span>
+                    <p class="text-xs text-gray-600 font-bold leading-relaxed text-amber-900">Take a screenshot of the payment success screen.</p>
+                </div>
+            </div>
+
+            <!-- Screenshot tip (highlighted) -->
+            <div class="screenshot-tip mb-4">
+                <div class="tip-icon">📸</div>
+                <p>
+                    <strong>Important — Share Your Screenshot!</strong><br>
+                    After payment, please take a screenshot of the success/confirmation page and send it to us on WhatsApp at
+                    <strong>+91 9399564309</strong>. This helps us confirm your order instantly and start preparation without delay.
+                </p>
+            </div>
+
+            <!-- Send screenshot on WhatsApp button -->
+            <button onclick="sendScreenshotWA()" class="w-full py-3.5 rounded-2xl font-extrabold text-base flex items-center justify-center gap-2.5 mb-3 active:scale-95 transition-all"
+                style="background:linear-gradient(135deg,#25d366,#128c7e);color:white;box-shadow:0 6px 20px rgba(37,211,102,0.35);">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                📸 Place Order & Send Payment Proof
+            </button>
+
+            <p class="text-center text-[10px] text-gray-400">Send your payment screenshot — your order is placed instantly ✓</p>
+        </div>
+
+        <!-- ===== WhatsApp Order SECTION ===== -->
+        <div id="waSection" style="display:none; animation: fadeIn 0.3s ease;">
+            <div class="bg-green-50 border border-green-100 rounded-2xl p-4 mb-4 text-sm text-green-800">
+                <p class="font-bold mb-1">💬 Order on WhatsApp — Cash on Delivery</p>
+                <p class="text-xs leading-relaxed opacity-80">Your full order details will be sent to our team. You can pay cash on delivery or arrange payment via WhatsApp directly.</p>
+            </div>
+            <button id="waOrderBtn" onclick="confirmWAOrder()" class="w-full py-4 rounded-2xl font-extrabold text-base flex items-center justify-center gap-2.5 active:scale-95 transition-all"
+                style="background:linear-gradient(135deg,#25d366 0%,#128c7e 100%);color:white;box-shadow:0 6px 24px rgba(37,211,102,0.38),0 2px 8px rgba(0,0,0,0.08);letter-spacing:0.02em;">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                Place Order on WhatsApp
+            </button>
+            <p class="text-center text-[10px] text-gray-400 mt-2">Your order details go to our team instantly ✓</p>
+        </div>
+
+    </div>
+</div>
+
+<!-- ==========================================
+     TERMS & CONDITIONS MODAL
+========================================== -->
+<div id="termsModal" class="modal-overlay" onclick="if(event.target===this)closeModal('termsModal')">
+    <div class="modal-box">
+        <div class="flex justify-between items-start mb-2">
+            <h2>Terms &amp; Conditions</h2>
+            <button onclick="closeModal('termsModal')" class="p-2 text-gray-400 hover:bg-gray-100 rounded-full shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <p class="text-gray-400 text-xs mb-5 italic">Last updated: January 2025 &nbsp;|&nbsp; Purnendra Bakery &amp; Party Hub, New Delhi</p>
+
+        <h3>1. Acceptance of Terms</h3>
+        <p>By accessing our website, placing an order, or interacting with us via WhatsApp, you agree to be bound by these Terms &amp; Conditions. If you do not agree, please discontinue use of our services.</p>
+
+        <h3>2. Products &amp; Orders</h3>
+        <ul>
+            <li>All products are subject to availability and may be discontinued without prior notice.</li>
+            <li>Product images are representative. Slight variations in colour and decoration may occur due to the handcrafted nature of our items.</li>
+            <li>Custom orders require a minimum advance notice of 24 hours and a non-refundable 50% deposit.</li>
+            <li>Orders are confirmed only upon receipt of payment or WhatsApp confirmation from our team.</li>
+        </ul>
+
+        <h3>3. Pricing</h3>
+        <ul>
+            <li>All prices are displayed in Indian Rupees (₹) and include applicable taxes.</li>
+            <li>Delivery charges, if applicable, are communicated at the time of order confirmation.</li>
+            <li>Purnendra Bakery reserves the right to revise prices without prior notice.</li>
+        </ul>
+
+        <h3>4. Delivery</h3>
+        <ul>
+            <li>Delivery is available within select areas of New Delhi. Coverage zones are confirmed upon order placement.</li>
+            <li>Delivery times are estimates and may vary due to traffic, weather, or high-demand periods.</li>
+            <li>The customer is responsible for ensuring someone is available at the delivery address at the agreed time.</li>
+            <li>We maintain a cold-chain throughout delivery. Any tampering after handover is not our liability.</li>
+        </ul>
+
+        <h3>5. Returns &amp; Refunds</h3>
+        <p>Please refer to our detailed Return Policy on this page. Refunds are processed within 24–48 business hours upon approval. Refunds will only be issued for eligible claims as described in our policy.</p>
+
+        <h3>6. Allergies &amp; Dietary Requirements</h3>
+        <ul>
+            <li>Our kitchen handles dairy, eggs, gluten, nuts, and soy. Cross-contamination is possible.</li>
+            <li>Customers with severe allergies must inform us in advance. We are not liable for undisclosed allergies.</li>
+            <li>Ingredient information is available on request via WhatsApp or in-store.</li>
+        </ul>
+
+        <h3>7. Intellectual Property</h3>
+        <p>All content on this website — including images, logos, and descriptions — is the property of Purnendra Bakery. Reproduction or commercial use without written consent is strictly prohibited.</p>
+
+        <h3>8. Limitation of Liability</h3>
+        <p>Purnendra Bakery's liability is limited to the value of the order placed. We are not liable for indirect, consequential, or incidental damages arising from product use.</p>
+
+        <h3>9. Privacy</h3>
+        <p>Customer information shared via this website or WhatsApp is used solely to process orders and improve service. We do not sell or share personal data with third parties.</p>
+
+        <h3>10. Governing Law</h3>
+        <p>These terms are governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of the courts in New Delhi.</p>
+
+        <h3>11. Contact</h3>
+        <p>For any queries, reach us at <strong>+91 9399564309</strong> or WhatsApp us directly. We typically respond within 30 minutes during business hours.</p>
+
+        <div class="mt-6 pt-4 border-t border-gray-100 flex justify-end">
+            <button onclick="closeModal('termsModal')" class="px-6 py-2.5 gold-bg text-white rounded-xl font-bold text-sm">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================
+     JAVASCRIPT
+========================================== -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    /* ---- EASY EDIT ---- */
+    const WHATSAPP_NUM = "919399564309";
+
+    /* ---- PERSISTENT CART (localStorage) ---- */
+    let cart = JSON.parse(localStorage.getItem('pb_cart') || '[]');
+    let galleryState = {};
+
+    function saveCart() {
+        try { localStorage.setItem('pb_cart', JSON.stringify(cart)); } catch(e) {}
+    }
+
+    /* ==========================================
+       AUTO OPEN/CLOSE SHOP STATUS
+       Mon-Sat: 9AM–10PM | Sunday: 10AM–11PM
+    ========================================== */
+    function checkShopStatus() {
+        const now = new Date();
+        const day = now.getDay(); // 0=Sun, 1=Mon...6=Sat
+        const h = now.getHours();
+        const m = now.getMinutes();
+        const time = h + m / 60;
+
+        let isOpen;
+        if (day === 0) {
+            isOpen = time >= 10 && time < 23; // Sunday 10AM–11PM
+        } else {
+            isOpen = time >= 9 && time < 22;  // Mon-Sat 9AM–10PM
+        }
+
+        // Closed banner
+        document.body.classList.toggle('shop-closed', !isOpen);
+        document.getElementById('closedBanner').style.display = isOpen ? 'none' : 'block';
+
+        // Footer status
+        const footerEl = document.getElementById('footerStatus');
+        const sidebarEl = document.getElementById('sidebarStatus');
+        if (isOpen) {
+            const dot = '<span class="status-dot open"></span>';
+            if (footerEl) footerEl.innerHTML = dot + ' Currently Open';
+            if (footerEl) footerEl.className = 'flex items-center gap-1 text-green-500 text-xs mt-1 font-bold';
+            if (sidebarEl) sidebarEl.innerHTML = '🟢 Shop is Open';
+        } else {
+            const dot = '<span class="status-dot closed"></span>';
+            if (footerEl) footerEl.innerHTML = dot + ' Currently Closed';
+            if (footerEl) footerEl.className = 'flex items-center gap-1 text-red-400 text-xs mt-1 font-bold';
+            if (sidebarEl) sidebarEl.innerHTML = '🔴 Shop is Closed';
+        }
+        lucide.createIcons();
+    }
+    checkShopStatus();
+    setInterval(checkShopStatus, 60000); // re-check every minute
+
+    /* ==========================================
+       BACK BUTTON: 1st press = refresh page,
+                    2nd press = exit site
+    ========================================== */
+    (function() {
+        // Only push state if this isn't a back-triggered reload
+        if (!sessionStorage.getItem('backHandled')) {
+            history.pushState({ bakery: true }, '', window.location.href);
+        }
+        window.addEventListener('popstate', function() {
+            if (!sessionStorage.getItem('backHandled')) {
+                // First back press: mark and reload (scroll to top = "refresh")
+                sessionStorage.setItem('backHandled', '1');
+                history.pushState({ bakery: true }, '', window.location.href);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                location.reload();
+            } else {
+                // Second back press: clear flag and truly go back (exit)
+                sessionStorage.removeItem('backHandled');
+                history.back();
+            }
+        });
+    })();
+
+    /* ==========================================
+       GALLERY FUNCTIONS
+    ========================================== */
+    function slideGallery(id, dir) {
+        const track = document.getElementById(`gallery-${id}`);
+        const total = track.children.length;
+        if (!galleryState[id]) galleryState[id] = 0;
+        galleryState[id] = (galleryState[id] + dir + total) % total;
+        track.style.transform = `translateX(-${galleryState[id] * 100}%)`;
+        updateGalleryDots(id, galleryState[id], total);
+    }
+
+    function goGallery(id, idx) {
+        const track = document.getElementById(`gallery-${id}`);
+        const total = track.children.length;
+        galleryState[id] = idx;
+        track.style.transform = `translateX(-${idx * 100}%)`;
+        updateGalleryDots(id, idx, total);
+    }
+
+    function updateGalleryDots(id, activeIdx, total) {
+        const dotsEl = document.getElementById(`dots-${id}`);
+        if (!dotsEl) return;
+        Array.from(dotsEl.children).forEach((d, i) => {
+            d.classList.toggle('active', i === activeIdx);
+        });
+    }
+
+    /* Touch/swipe support for galleries */
+    document.querySelectorAll('.gallery-wrap').forEach(wrap => {
+        let startX = 0;
+        const gid = wrap.getAttribute('data-gallery-id');
+        wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+        wrap.addEventListener('touchend', e => {
+            const diff = startX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 40) slideGallery(gid, diff > 0 ? 1 : -1);
+        }, { passive: true });
+    });
+
+    /* ==========================================
+       ZOOM
+    ========================================== */
+    function openZoom(src) {
+        const el = document.getElementById('zoomOverlay');
+        document.getElementById('zoomImg').src = src;
+        el.style.display = 'flex';
+    }
+
+    /* ==========================================
+       CART FUNCTIONS
+    ========================================== */
+    function addToCart(id, name, price, photo) {
+        const exist = cart.find(x => x.id === id);
+        if (exist) exist.qty++;
+        else cart.push({ id, name, price, photo, qty: 1 });
+        saveCart();
+        updateCartUI();
+        showToast(`${name} added to cart!`);
+    }
+
+    function showToast(msg) {
+        let t = document.getElementById('toast');
+        if (!t) {
+            t = document.createElement('div');
+            t.id = 'toast';
+            t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#78350f;color:white;padding:10px 20px;border-radius:50px;font-size:12px;font-weight:700;z-index:9999;transition:opacity 0.4s;box-shadow:0 4px 20px rgba(0,0,0,0.2)';
+            document.body.appendChild(t);
+        }
+        t.textContent = '✓ ' + msg;
+        t.style.opacity = '1';
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.style.opacity = '0', 2000);
+    }
+
+    function updateCartUI() {
+        const list = document.getElementById('cartItems');
+        const totalEl = document.getElementById('cartTotal');
+        const countEl = document.getElementById('cart-count');
+        list.innerHTML = '';
+        let sum = 0; let totalQty = 0;
+        cart.forEach(item => {
+            sum += item.price * item.qty;
+            totalQty += item.qty;
+            const div = document.createElement('div');
+            div.className = 'flex gap-3 items-center bg-gray-50 p-3 rounded-xl border border-gray-100';
+            div.innerHTML = `
+                <img src="${item.photo}" class="w-12 h-12 rounded-xl object-cover shrink-0">
+                <div class="flex-1 min-w-0">
+                    <p class="font-bold text-xs text-gray-800 truncate">${item.name}</p>
+                    <p class="gold-text text-xs font-bold">₹${item.price} × ${item.qty} = ₹${item.price * item.qty}</p>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button onclick="changeQty('${item.id}',-1)" class="w-7 h-7 bg-red-50 text-red-500 rounded-lg font-bold text-sm hover:bg-red-100">−</button>
+                    <span class="w-6 text-center text-sm font-bold">${item.qty}</span>
+                    <button onclick="changeQty('${item.id}',1)" class="w-7 h-7 bg-green-50 text-green-600 rounded-lg font-bold text-sm hover:bg-green-100">+</button>
+                </div>`;
+            list.appendChild(div);
+        });
+        if (cart.length === 0) list.innerHTML = '<p class="text-center text-gray-400 text-sm py-12">Your cart is empty 🛒</p>';
+        totalEl.textContent = `₹${sum}`;
+        countEl.textContent = totalQty;
+        updateCartUserBadge();
+        lucide.createIcons();
+    }
+
+    function changeQty(id, d) {
+        const item = cart.find(x => x.id === id);
+        if (!item) return;
+        item.qty += d;
+        if (item.qty < 1) cart = cart.filter(x => x.id !== id);
+        saveCart();
+        updateCartUI();
+    }
+
+    function updateCartUserBadge() {
+        const el = document.getElementById('cartUserBadge');
+        if (!el) return;
+        const user = getLoggedInUser();
+        if (user) {
+            el.innerHTML = `<span id="guestBadge">👤 ${user.name}</span>`;
+        } else {
+            el.innerHTML = `<span id="guestBadge">🛒 Ordering as Guest &nbsp;<button onclick="toggleCart(false);openModal('loginModal')" style="text-decoration:underline;color:#b8860b;font-weight:700;background:none;border:none;cursor:pointer;font-size:10px;">Login?</button></span>`;
+        }
+    }
+
+    /* ==========================================
+       PAYMENT MODAL STATE
+    ========================================== */
+    const UPI_ID = "9399564309@ybl"; // ← Change to your actual UPI ID
+    let _payData = {}; // holds current order data for the pay modal
+
+    /* ==========================================
+       OPEN PAY MODAL — from BUY NOW button
+    ========================================== */
+    function openPayModal(id, name, salePrice, mrp, desc, photo, unicode) {
+        _payData = { id, name, salePrice, mrp, desc, photo, unicode, mode: 'single' };
+        _setupPayModal(name, salePrice);
+        openModal('payModal');
+    }
+
+    /* ==========================================
+       OPEN PAY MODAL — from cart checkout (WhatsApp)
+    ========================================== */
+    function openCartPayment() {
+        if (cart.length === 0) { showToast('Your cart is empty!'); return; }
+        // Direct WhatsApp COD flow from cart
+        toggleCart(false);
+        setTimeout(() => {
+            let total = 0;
+            cart.forEach(i => total += i.price * i.qty);
+            _payData = { mode: 'cart', salePrice: total };
+            _setupPayModal(`${cart.length} item${cart.length > 1 ? 's' : ''} in cart`, total);
+            openModal('payModal');
+            // Auto-select WhatsApp method
+            setTimeout(() => selectPayMethod('wa'), 200);
+        }, 300);
+    }
+
+    /* ==========================================
+       OPEN PAY MODAL — from cart UPI button
+    ========================================== */
+    function openCartUPI() {
+        if (cart.length === 0) { showToast('Your cart is empty!'); return; }
+        toggleCart(false);
+        setTimeout(() => {
+            let total = 0;
+            cart.forEach(i => total += i.price * i.qty);
+            _payData = { mode: 'cart', salePrice: total };
+            _setupPayModal(`${cart.length} item${cart.length > 1 ? 's' : ''} in cart`, total);
+            openModal('payModal');
+            // Auto-select UPI method and launch app
+            setTimeout(() => selectPayMethod('upi'), 200);
+        }, 300);
+    }
+
+    function _setupPayModal(label, amount) {
+        document.getElementById('payOrderSummary').textContent = label;
+        document.getElementById('payAmountDisplay').textContent = `₹${amount}`;
+        // Pre-build QR using Google Charts (UPI URI)
+        const upiUri = `upi://pay?pa=${UPI_ID}&pn=Purnendra+Bakery&am=${amount}&cu=INR`;
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(upiUri)}&size=180x180&margin=10&color=78350f`;
+        document.getElementById('upiQrImg').src = qrUrl;
+        document.getElementById('upiIdText').textContent = UPI_ID;
+        // Reset to no method selected
+        document.getElementById('upiSection').style.display = 'none';
+        document.getElementById('waSection').style.display = 'none';
+        document.getElementById('btnUPI').classList.remove('selected');
+        document.getElementById('btnWA').classList.remove('selected');
+        lucide.createIcons();
+    }
+
+    function selectPayMethod(method) {
+        document.getElementById('btnUPI').classList.toggle('selected', method === 'upi');
+        document.getElementById('btnWA').classList.toggle('selected', method === 'wa');
+        document.getElementById('upiSection').style.display = method === 'upi' ? 'block' : 'none';
+        document.getElementById('waSection').style.display = method === 'wa' ? 'block' : 'none';
+        lucide.createIcons();
+
+        // When UPI is selected, immediately launch the UPI app via deep link
+        if (method === 'upi') {
+            _launchUPIApp();
+        }
+    }
+
+    /* Launch native UPI app chooser directly */
+    function _launchUPIApp() {
+        const d = _payData;
+        const amount = d.salePrice;
+        const upiUri = `upi://pay?pa=${UPI_ID}&pn=Purnendra+Bakery&am=${amount}&cu=INR&tn=Order+Purnendra+Bakery`;
+
+        // Try intent URI first for Android, fallback to standard URI
+        const intentUri = `intent://pay?pa=${UPI_ID}&pn=Purnendra+Bakery&am=${amount}&cu=INR&tn=Order+Purnendra+Bakery#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.browser_fallback_url=${encodeURIComponent(upiUri)};end`;
+
+        const isAndroid = /android/i.test(navigator.userAgent);
+        // Use hidden iframe trick so page doesn't navigate away
+        const iframe = document.createElement('iframe');
+        iframe.style.cssText = 'position:fixed;top:-1000px;left:-1000px;width:1px;height:1px;border:none;';
+        document.body.appendChild(iframe);
+
+        try {
+            iframe.src = upiUri;
+        } catch(e) {}
+
+        // Also try via anchor click for broader compatibility
+        const a = document.createElement('a');
+        a.href = upiUri;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        setTimeout(() => {
+            try { document.body.removeChild(iframe); } catch(e) {}
+        }, 2000);
+
+        // After 2.5s show "Did you pay?" confirmation so order can be auto-placed
+        setTimeout(() => {
+            _showPayConfirmPrompt();
+        }, 2500);
+    }
+
+    /* Show a "Payment done?" prompt inside the modal */
+    function _showPayConfirmPrompt() {
+        // Only show if UPI section is still visible (user didn't close modal)
+        const upiSec = document.getElementById('upiSection');
+        if (!upiSec || upiSec.style.display === 'none') return;
+
+        const existingPrompt = document.getElementById('upiPayConfirm');
+        if (existingPrompt) return; // already showing
+
+        const div = document.createElement('div');
+        div.id = 'upiPayConfirm';
+        div.className = 'mt-4 p-4 rounded-2xl border-2 border-green-300 bg-green-50 text-center';
+        div.innerHTML = `
+            <p class="text-green-800 font-bold text-sm mb-1">✅ Did you complete the payment?</p>
+            <p class="text-green-600 text-xs mb-3">Tap below to confirm and your order will be placed automatically!</p>
+            <div class="flex gap-2">
+                <button onclick="_autoPlaceOrder()" class="flex-1 py-2.5 rounded-xl font-bold text-sm text-white" style="background:linear-gradient(135deg,#22c55e,#16a34a);box-shadow:0 4px 14px rgba(34,197,94,0.4);">
+                    ✅ Yes, Payment Done!
+                </button>
+                <button onclick="_retryUPILaunch()" class="flex-1 py-2.5 rounded-xl font-bold text-sm text-white" style="background:linear-gradient(135deg,#f59e0b,#b8860b);">
+                    🔄 Retry UPI App
+                </button>
+            </div>
+        `;
+        upiSec.appendChild(div);
+        lucide.createIcons();
+    }
+
+    function _retryUPILaunch() {
+        const p = document.getElementById('upiPayConfirm');
+        if (p) p.remove();
+        _launchUPIApp();
+    }
+
+    /* Auto-place order after UPI payment confirmed by user */
+    function _autoPlaceOrder() {
+        showToast('🎉 Order Placed! Opening WhatsApp...');
+        closeModal('payModal');
+        // Small delay so toast shows, then open WhatsApp with full order + payment details
+        setTimeout(() => {
+            sendScreenshotWA();
+        }, 500);
+    }
+
+    /* Copy UPI ID */
+    function copyUPI(el) {
+        const id = document.getElementById('upiIdText').textContent;
+        navigator.clipboard.writeText(id).then(() => {
+            el.classList.add('copy-success');
+            document.getElementById('copiedTag').classList.remove('hidden');
+            setTimeout(() => {
+                el.classList.remove('copy-success');
+                document.getElementById('copiedTag').classList.add('hidden');
+            }, 2000);
+        }).catch(() => {
+            // Fallback for older browsers
+            const inp = document.createElement('input');
+            inp.value = id; document.body.appendChild(inp);
+            inp.select(); document.execCommand('copy');
+            document.body.removeChild(inp);
+            showToast('UPI ID copied!');
+        });
+    }
+
+    /* ============================================================
+       sendScreenshotWA — Called when customer taps
+       "Send Screenshot on WhatsApp" after UPI payment.
+       Sends FULL order details + payment confirmation message.
+    ============================================================ */
+    function sendScreenshotWA() {
+
+        const d = _payData;                          // order data stored when modal was opened
+        const user = getLoggedInUser();              // logged-in user (may be null for guests)
+        const UPI_AMOUNT = d.salePrice;              // amount that was paid
+
+        /* --- Customer info line --- */
+        const CUSTOMER_LINE = user
+            ? `👤 *Customer:* ${user.name} | 📱 ${user.phone}`
+            : `👤 *Customer:* Guest`;
+
+        /* ── SINGLE PRODUCT ORDER ── */
+        if (d.mode === 'single') {
+
+            const PRODUCT_ID      = d.id;
+            const PRODUCT_NAME    = d.name;
+            const PRODUCT_UNICODE = d.unicode;
+            const PRODUCT_DESC    = d.desc;
+            const PRODUCT_MRP     = d.mrp;
+            const PRODUCT_PRICE   = d.salePrice;
+            const PRODUCT_PHOTO   = d.photo;
+            const DISCOUNT_PCT    = Math.round(((PRODUCT_MRP - PRODUCT_PRICE) / PRODUCT_MRP) * 100);
+            const SAVINGS_AMT     = PRODUCT_MRP - PRODUCT_PRICE;
+
+            const msg = encodeURIComponent(
+`✅ *UPI PAYMENT DONE — Purnendra Bakery*
+
+${CUSTOMER_LINE}
+
+━━━━━━━━━━━━━━━━━━
+🛒 *ORDER DETAILS*
+━━━━━━━━━━━━━━━━━━
+${PRODUCT_UNICODE}  *Product:* ${PRODUCT_NAME}
+🆔 *Product ID:* ${PRODUCT_ID}
+
+📝 *Description:*
+${PRODUCT_DESC}
+
+💰 *MRP:* ₹${PRODUCT_MRP}
+🏷️ *Sale Price:* ₹${PRODUCT_PRICE}
+🔥 *Discount:* ${DISCOUNT_PCT}% OFF (You saved ₹${SAVINGS_AMT})
+
+🖼️ *Product Photo:* ${PRODUCT_PHOTO}
+
+━━━━━━━━━━━━━━━━━━
+💳 *PAYMENT INFO*
+━━━━━━━━━━━━━━━━━━
+✅ Paid via UPI
+🏦 *UPI ID:* ${UPI_ID}
+💵 *Amount Paid:* ₹${UPI_AMOUNT}
+
+📸 Screenshot of payment is attached above.
+Please confirm my order. Thank you! 🎂`
+            );
+
+            window.open(`https://wa.me/${WHATSAPP_NUM}?text=${msg}`, '_blank');
+
+        /* ── CART / BASKET ORDER ── */
+        } else if (d.mode === 'cart') {
+
+            let TOTAL_AMOUNT = 0;
+
+            /* Build one line per cart item */
+            const ITEM_LINES = cart.map((item, index) => {
+                const itemTotal = item.price * item.qty;
+                TOTAL_AMOUNT += itemTotal;
+                return `${index + 1}. *${item.name}*\n   Qty: ${item.qty}  ×  ₹${item.price}  =  ₹${itemTotal}\n   🖼️ ${item.photo}`;
+            }).join('\n\n');
+
+            const msg = encodeURIComponent(
+`✅ *UPI PAYMENT DONE — Purnendra Bakery*
+
+${CUSTOMER_LINE}
+
+━━━━━━━━━━━━━━━━━━
+🧺 *BASKET ORDER DETAILS*
+━━━━━━━━━━━━━━━━━━
+${ITEM_LINES}
+
+━━━━━━━━━━━━━━━━━━
+💰 *Grand Total: ₹${TOTAL_AMOUNT}*
+━━━━━━━━━━━━━━━━━━
+
+💳 *PAYMENT INFO*
+✅ Paid via UPI
+🏦 *UPI ID:* ${UPI_ID}
+💵 *Amount Paid:* ₹${UPI_AMOUNT}
+
+📸 Screenshot of payment is attached above.
+Please confirm my order. Thank you! 🎂`
+            );
+
+            window.open(`https://wa.me/${WHATSAPP_NUM}?text=${msg}`, '_blank');
+        }
+    }
+
+    /* Confirm WhatsApp order (COD / pay later) */
+    function confirmWAOrder() {
+        if (_payData.mode === 'cart') {
+            checkoutCart();
+        } else {
+            const d = _payData;
+            buyNowWA(d.id, d.name, d.salePrice, d.mrp, d.desc, d.photo, d.unicode);
+        }
+        closeModal('payModal');
+    }
+
+    /* ==========================================
+       BUY NOW — WhatsApp order (called internally)
+    ========================================== */
+    function buyNow(id, name, salePrice, mrp, desc, photo, unicode) {
+        // kept for backward compat — direct WA send
+        buyNowWA(id, name, salePrice, mrp, desc, photo, unicode);
+    }
+    function buyNowWA(id, name, salePrice, mrp, desc, photo, unicode) {
+        const discount = Math.round(((mrp - salePrice) / mrp) * 100);
+        const savings = mrp - salePrice;
+        const user = getLoggedInUser();
+        const customerLine = user ? `👤 *Customer:* ${user.name} | 📱 ${user.phone}` : `👤 *Customer:* Guest`;
+        const msg = encodeURIComponent(
+`🛒 *NEW ORDER — Purnendra Bakery*
+
+${customerLine}
+
+${unicode}  *Product ID:* ${id}
+📦 *Product Name:* ${name}
+🆔 *Product ID:* ${id}
+
+📝 *Description:*
+${desc}
+
+━━━━━━━━━━━━━━
+💰 *MRP:* ₹${mrp}
+🏷️ *Sale Price:* ₹${salePrice}
+🔥 *You Save:* ₹${savings} (${discount}% OFF)
+━━━━━━━━━━━━━━
+
+🖼️ *Product Photo:* ${photo}
+
+Please confirm availability and delivery details.
+Thank you for choosing Purnendra Bakery! 🎂`
+        );
+        window.open(`https://wa.me/${WHATSAPP_NUM}?text=${msg}`, '_blank');
+    }
+
+    /* ==========================================
+       CHECKOUT CART — Full order to WhatsApp
+    ========================================== */
+    function checkoutCart() {
+        if (cart.length === 0) return alert('Your cart is empty!');
+        let total = 0;
+        let lines = cart.map(i => {
+            total += i.price * i.qty;
+            return `• ${i.name} × ${i.qty} = ₹${i.price * i.qty}\n  🖼️ ${i.photo}`;
+        }).join('\n\n');
+        const user = getLoggedInUser();
+        const customerLine = user ? `👤 *Customer:* ${user.name} | 📱 ${user.phone}` : `👤 *Customer:* Guest`;
+        const msg = encodeURIComponent(
+`🧺 *BASKET ORDER — Purnendra Bakery*
+
+${customerLine}
+
+${lines}
+
+━━━━━━━━━━━━━━
+💰 *Grand Total: ₹${total}*
+━━━━━━━━━━━━━━
+
+Please confirm and share delivery details. Thank you! 🎂`
+        );
+        window.open(`https://wa.me/${WHATSAPP_NUM}?text=${msg}`, '_blank');
+    }
+
+    /* ==========================================
+       MODAL
+    ========================================== */
+    function openModal(id) {
+        const m = document.getElementById(id);
+        m.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        lucide.createIcons();
+    }
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    /* ==========================================
+       SIDEBAR & CART TOGGLES
+    ========================================== */
+    function toggleMenu(open) {
+        const m = document.getElementById('sideMenu');
+        const o = document.getElementById('menuOverlay');
+        if (open) {
+            m.classList.add('side-open');
+            o.classList.remove('hidden');
+            setTimeout(() => o.classList.add('opacity-100'), 10);
+        } else {
+            m.classList.remove('side-open');
+            o.classList.remove('opacity-100');
+            setTimeout(() => o.classList.add('hidden'), 400);
+        }
+    }
+
+    function toggleCart(open) {
+        const c = document.getElementById('cartDrawer');
+        const o = document.getElementById('cartOverlay');
+        if (open) {
+            c.classList.add('side-open');
+            o.classList.remove('hidden');
+            setTimeout(() => o.classList.add('opacity-100'), 10);
+        } else {
+            c.classList.remove('side-open');
+            o.classList.remove('opacity-100');
+            setTimeout(() => o.classList.add('hidden'), 400);
+        }
+    }
+
+    /* ==========================================
+       SEARCH TOGGLE
+    ========================================== */
+    let searchOpen = false;
+    function toggleSearch(force) {
+        const bar = document.getElementById('searchBar');
+        searchOpen = force !== undefined ? force : !searchOpen;
+        if (searchOpen) {
+            bar.classList.add('open');
+            setTimeout(() => document.getElementById('mainSearch').focus(), 300);
+        } else {
+            bar.classList.remove('open');
+            document.getElementById('mainSearch').value = '';
+            filterBySearch();
+        }
+    }
+
+    function filterBySearch() {
+        const val = document.getElementById('mainSearch').value.toLowerCase().trim();
+        if (!val) {
+            document.querySelectorAll('.product-item').forEach(i => i.style.display = '');
+            return;
+        }
+        document.querySelectorAll('.product-item').forEach(i => {
+            const name = (i.getAttribute('data-name') || '').toLowerCase();
+            const id = (i.getAttribute('data-id') || '').toLowerCase();
+            const kw = (i.getAttribute('data-keywords') || '').toLowerCase();
+            const cat = (i.getAttribute('data-cat') || '').toLowerCase();
+            const matched = name.includes(val) || id.includes(val) || kw.includes(val) || cat.includes(val);
+            i.style.display = matched ? '' : 'none';
+        });
+    }
+
+    /* ==========================================
+       FILTER & SORT
+    ========================================== */
+    function filterItems(cat) {
+        document.querySelectorAll('.product-item').forEach(i => {
+            i.style.display = (cat === 'All' || i.getAttribute('data-cat') === cat) ? '' : 'none';
+        });
+        document.querySelectorAll('.filter-btn').forEach(b => {
+            b.classList.remove('active', 'bg-amber-900', 'text-white');
+            b.classList.add('border', 'border-amber-100', 'text-amber-900');
+        });
+        const active = document.querySelector(`.filter-btn[data-filter="${cat}"]`);
+        if (active) {
+            active.classList.add('active', 'bg-amber-900', 'text-white');
+            active.classList.remove('border', 'border-amber-100', 'text-amber-900');
+        }
+    }
+
+    function sortByPrice(order) {
+        const grid = document.getElementById('productGrid');
+        const items = Array.from(grid.querySelectorAll('.product-item'));
+        items.sort((a, b) => {
+            const pa = parseInt(a.getAttribute('data-price'));
+            const pb = parseInt(b.getAttribute('data-price'));
+            return order === 'low' ? pa - pb : pb - pa;
+        });
+        items.forEach(i => grid.appendChild(i));
+    }
+
+    /* ==========================================
+       HERO SLIDER AUTO
+    ========================================== */
+    let curHeroSlide = 0;
+    const heroSlides = document.querySelectorAll('.hero-slide');
+    const heroDots = document.querySelectorAll('.hero-dots button');
+
+    function goHeroSlide(idx) {
+        heroSlides[curHeroSlide].classList.remove('active');
+        heroDots[curHeroSlide].classList.remove('active');
+        curHeroSlide = idx;
+        heroSlides[curHeroSlide].classList.add('active');
+        heroDots[curHeroSlide].classList.add('active');
+    }
+
+    setInterval(() => {
+        goHeroSlide((curHeroSlide + 1) % heroSlides.length);
+    }, 4500);
+
+    /* ==========================================
+       ICON CATEGORY FILTER
+    ========================================== */
+    function catIconFilter(btn, cat) {
+        // Update icon bar active state
+        document.querySelectorAll('.cat-icon-btn').forEach(b => b.classList.remove('cat-active'));
+        btn.classList.add('cat-active');
+        // Sync with text filter bar
+        filterItems(cat);
+        // Smooth scroll to shop
+        const shopEl = document.getElementById('shop');
+        if (shopEl) shopEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    /* ==========================================
+       LOGIN / AUTH SYSTEM — Password Protected
+       Users DB stored as pb_users (array) in localStorage
+       Active session stored as pb_session
+    ========================================== */
+
+    /* ---- Helpers ---- */
+    function _getUsers() {
+        try { return JSON.parse(localStorage.getItem('pb_users') || '[]'); } catch(e) { return []; }
+    }
+    function _saveUsers(arr) {
+        try { localStorage.setItem('pb_users', JSON.stringify(arr)); } catch(e) {}
+    }
+    function getLoggedInUser() {
+        try { return JSON.parse(localStorage.getItem('pb_session') || 'null'); } catch(e) { return null; }
+    }
+    function _saveSession(u) {
+        // Don't save password hash in session
+        const sess = { name: u.name, phone: u.phone, email: u.email || '', userId: u.phone, createdAt: u.createdAt };
+        try { localStorage.setItem('pb_session', JSON.stringify(sess)); } catch(e) {}
+        return sess;
+    }
+
+    /* Simple hash — not cryptographic but works for local storage auth */
+    function _hashPwd(str) {
+        let h = 0;
+        for (let i = 0; i < str.length; i++) { h = (Math.imul(31, h) + str.charCodeAt(i)) | 0; }
+        return 'pb_' + Math.abs(h).toString(36) + str.length;
+    }
+
+    /* Toggle password visibility */
+    function togglePwdVis(inputId, iconId) {
+        const inp = document.getElementById(inputId);
+        const ico = document.getElementById(iconId);
+        if (inp.type === 'password') {
+            inp.type = 'text';
+            ico.setAttribute('data-lucide', 'eye-off');
+        } else {
+            inp.type = 'password';
+            ico.setAttribute('data-lucide', 'eye');
+        }
+        lucide.createIcons();
+    }
+
+    function handleLoginBtnClick() {
+        const user = getLoggedInUser();
+        if (user) { showLoggedInPanel(user); }
+        else { switchLoginTab('login'); }
+        openModal('loginModal');
+    }
+
+    function switchLoginTab(tab) {
+        ['loginForm','registerForm','guestForm','loggedInPanel'].forEach(id => {
+            document.getElementById(id).style.display = 'none';
+        });
+        document.querySelectorAll('.login-tab').forEach(b => b.classList.remove('active'));
+        const tabMap = { login: 0, register: 1, guest: 2 };
+        const tabs = document.querySelectorAll('.login-tab');
+        if (tabMap[tab] !== undefined) tabs[tabMap[tab]].classList.add('active');
+
+        if (tab === 'login') document.getElementById('loginForm').style.display = 'block';
+        else if (tab === 'register') document.getElementById('registerForm').style.display = 'block';
+        else if (tab === 'guest') document.getElementById('guestForm').style.display = 'block';
+        lucide.createIcons();
+    }
+
+    function showLoggedInPanel(user) {
+        ['loginForm','registerForm','guestForm'].forEach(id => document.getElementById(id).style.display = 'none');
+        document.querySelectorAll('.login-tab').forEach(b => b.classList.remove('active'));
+        const initials = user.name ? user.name.charAt(0).toUpperCase() : '?';
+        document.getElementById('loggedInAvatar').textContent = initials;
+        document.getElementById('loggedInName').textContent = '👋 Hello, ' + user.name + '!';
+        document.getElementById('loggedInPhone').textContent = '📱 ' + user.phone;
+        document.getElementById('loggedInEmail').textContent = user.email ? '✉️ ' + user.email : '';
+        document.getElementById('loggedInPanel').style.display = 'block';
+    }
+
+    /* ---- REGISTER ---- */
+    function doRegister() {
+        const name   = document.getElementById('regName').value.trim();
+        const phone  = document.getElementById('regPhone').value.trim();
+        const email  = document.getElementById('regEmail').value.trim();
+        const pass   = document.getElementById('regPass').value;
+        const pass2  = document.getElementById('regPass2').value;
+        const errEl  = document.getElementById('registerErr');
+
+        // Validation
+        if (!name)              { return _showErr(errEl, '⚠️ Please enter your full name.'); }
+        if (!phone || phone.length < 6) { return _showErr(errEl, '⚠️ Please enter a valid phone number.'); }
+        if (!pass || pass.length < 6)   { return _showErr(errEl, '⚠️ Password must be at least 6 characters.'); }
+        if (pass !== pass2)             { return _showErr(errEl, '⚠️ Passwords do not match.'); }
+
+        const users = _getUsers();
+        if (users.find(u => u.phone === phone)) {
+            return _showErr(errEl, '⚠️ This mobile number is already registered. Please login.');
+        }
+
+        errEl.classList.add('hidden');
+        const newUser = { name, phone, email, passwordHash: _hashPwd(pass), createdAt: Date.now() };
+        users.push(newUser);
+        _saveUsers(users);
+
+        const session = _saveSession(newUser);
+        updateNavUser(session);
+        showLoggedInPanel(session);
+        updateCartUserBadge();
+        showToast('Account created! Welcome, ' + name + '! 🎉');
+
+        // Clear fields
+        ['regName','regPhone','regEmail','regPass','regPass2'].forEach(id => document.getElementById(id).value = '');
+    }
+
+    /* ---- LOGIN ---- */
+    function doLogin() {
+        const identifier = document.getElementById('loginPhone').value.trim(); // phone or userId
+        const pass       = document.getElementById('loginPass').value;
+        const errEl      = document.getElementById('loginErr');
+
+        if (!identifier) { return _showErr(errEl, '⚠️ Please enter your mobile number or User ID.'); }
+        if (!pass)        { return _showErr(errEl, '⚠️ Please enter your password.'); }
+
+        const users = _getUsers();
+        const user = users.find(u => u.phone === identifier || u.email === identifier);
+
+        if (!user) {
+            return _showErr(errEl, '⚠️ No account found. Please register first.');
+        }
+        if (user.passwordHash !== _hashPwd(pass)) {
+            return _showErr(errEl, '❌ Incorrect password. Please try again.');
+        }
+
+        errEl.classList.add('hidden');
+        const session = _saveSession(user);
+        updateNavUser(session);
+        showLoggedInPanel(session);
+        updateCartUserBadge();
+        showToast('Welcome back, ' + user.name + '! 👋');
+
+        // Clear fields
+        document.getElementById('loginPhone').value = '';
+        document.getElementById('loginPass').value = '';
+    }
+
+    function _showErr(el, msg) {
+        el.textContent = msg;
+        el.classList.remove('hidden');
+        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function doLogout() {
+        try { localStorage.removeItem('pb_session'); } catch(e) {}
+        document.getElementById('navAvatarLabel').textContent = '👤';
+        document.getElementById('sideLoginLabel').textContent = 'Login / Register';
+        updateCartUserBadge();
+        closeModal('loginModal');
+        showToast('Logged out. See you soon! 👋');
+    }
+
+    function continueAsGuest() {
+        closeModal('loginModal');
+        showToast('Continuing as Guest. Happy shopping! 🛒');
+    }
+
+    function updateNavUser(user) {
+        if (!user) return;
+        const initials = user.name ? user.name.charAt(0).toUpperCase() : '👤';
+        document.getElementById('navAvatarLabel').textContent = initials;
+        document.getElementById('sideLoginLabel').textContent = 'Hi, ' + user.name.split(' ')[0];
+    }
+
+    /* Init user state on load */
+    (function initUser() {
+        const user = getLoggedInUser();
+        if (user) updateNavUser(user);
+        updateCartUserBadge();
+    })();
+
+    /* ==========================================
+       DISCOUNT BADGE AUTO-CALCULATION
+    ========================================== */
+    document.querySelectorAll('.discount-badge[data-sale][data-mrp]').forEach(el => {
+        const sale = parseInt(el.dataset.sale);
+        const mrp = parseInt(el.dataset.mrp);
+        if (mrp > sale) {
+            const pct = Math.round(((mrp - sale) / mrp) * 100);
+            el.textContent = `${pct}% OFF`;
+        } else {
+            el.remove();
+        }
+    });
+
+    /* ---- Load saved cart into UI on page start ---- */
+    updateCartUI();
+
+</script>
+</body>
+</html>
